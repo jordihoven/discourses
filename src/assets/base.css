@@ -1,0 +1,176 @@
+/* google font import */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400..700&display=swap');
+
+/* variables */
+:root {
+  /* colors */
+  --black: #000;
+  --white: #fff;
+  --primary: #0070f3;
+  --darkgrey: #444;
+  --lightgrey: #888;
+  --danger: #ef4444;
+  --button-color-primary: #fff;
+  /* typography */
+  --heading: 2rem;
+  --subheading: 1.25rem;
+  --body: 1rem;
+  --span: 0.875rem;
+  /* font weights */
+  --regular: 400;
+  --medium: 500;
+  --semibold: 600;
+  --bold: 700;
+  /* spacing */
+  --xxs-spacing: 4px;
+  --xs-spacing: 8px;
+  --s-spacing: 16px;
+  --m-spacing: 24px;
+  --l-spacing: 40px;
+  --xl-spacing: 64px;
+  --huge-spacing: 8rem;
+  /* sizes */
+  --m-max: 48rem;
+  --l-max: 80rem;
+  /* others */
+  --radius: 6px;
+  --transition: all 0.3s ease-in-out;
+  --border: 1px solid var(--stroke);
+  --box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.5);
+  /* media queries */
+  --mobile: 600px;
+  --tablet: 992px;
+  color-scheme: light dark;
+}
+
+/* Dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-main: #1a1a1a;
+    --bg-primary: #232323;
+    --bg-secondary: #2e2e2e;
+    --text-primary: #fcfcfc;
+    --text-secondary: #a3a3a3;
+    --surface: #1e1e1e;
+    --stroke: #3e3e3e;
+    --bg-button-secondary: #313131;
+    --button-color-secondary: #f5f5f5;
+    --link: #4493f8;
+    --scrollbar: #3d3d3d;
+  }
+}
+
+/* Light mode */
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg-main: #fafafa;
+    --bg-primary: #fff;
+    --bg-secondary: #f2f2f2;
+    --text-primary: #171717;
+    --text-secondary: #525252;
+    --surface: #f2f2f2;
+    --stroke: #e4e4e4;
+    --bg-button-secondary: #fff;
+    --button-color-secondary: #262626;
+    --link: #0969da;
+    --scrollbar: #d3d3d3;
+  }
+}
+
+/* global styles */
+h1 {
+  font-size: var(--heading);
+  font-weight: var(--semibold);
+  margin: 0;
+  color: var(--text-primary);
+}
+
+h2,
+h3 {
+  /* since we only use headings and subheadings, the h3 is the same as h2... */
+  font-size: var(--subheading);
+  font-weight: var(--semibold);
+  margin: 0;
+  color: var(--text-primary);
+}
+
+p {
+  font-size: var(--body);
+  font-weight: var(--regular);
+  margin: 0;
+  color: var(--text-primary);
+}
+
+span {
+  font-size: var(--span);
+  font-weight: var(--regular);
+  margin: 0;
+  color: var(--text-secondary);
+}
+
+a {
+  font-size: var(--span);
+  font-weight: var(--regular);
+  margin: 0;
+  color: var(--text-primary);
+  text-decoration: none;
+}
+a:hover {
+  color: var(--link);
+}
+
+button {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+  border: 1px solid var(--stroke);
+  background: var(--bg-secondary);
+  border-radius: var(--radius);
+  font-size: var(--span);
+  font-weight: var(--medium);
+  height: fit-content;
+  padding: 6px var(--xs-spacing);
+}
+
+button:hover {
+  cursor: pointer;
+}
+
+.link {
+  color: var(--link);
+  width: fit-content;
+}
+
+/* loader animation. simply add .loader to any element to make it rotate */
+@keyframes rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.loader {
+  animation: rotate 1.5s linear infinite;
+}
+
+/* styling for lucide icons... */
+.icon {
+  width: 16px;
+  height: 16px;
+  color: var(--text-secondary);
+}
+
+.medium {
+  font-weight: var(--medium);
+}
+
+/* toaster-ts overrides */
+#app #toaster-wrapper .toast {
+  border-radius: var(--radius);
+  background-color: var(--bg-primary);
+  border-color: var(--stroke);
+  color: var(--text-primary);
+  box-shadow: none;
+}
