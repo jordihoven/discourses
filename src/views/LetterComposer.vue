@@ -1,7 +1,7 @@
 <template>
-  <div class="app-container">
+  <div class="lettercomposer">
     <header>
-      <button><LucideSparkles class="icon" />Send letter</button>
+      <button @click="sendLetter"><LucideSparkles class="icon" />Send letter</button>
     </header>
     <div class="letter-container">
       <div ref="editor" class="letter"></div>
@@ -13,6 +13,8 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import EditorJS from '@editorjs/editorjs'
 import Header from '@editorjs/header'
+
+import { supabase } from '@/lib/supabaseClient'
 
 export default {
   name: 'LetterComposer',
@@ -38,15 +40,45 @@ export default {
       }
     })
 
+    const sendLetter = async () => {
+      if (!editorInstance) return
+
+      try {
+        // Save the Editor.js content
+        const content = await editorInstance.save()
+        // Insert the letter into the Supabase database
+        const { data, error } = await supabase
+          .from('letters')
+          .insert([
+            {
+              content_json: content, // Store the Editor.js JSON content
+              content: JSON.stringify(content.blocks.map((block) => block.text)).replace(/["[\],]/g, ' ') // Optional: Save plain text
+            }
+          ])
+          .select()
+        if (error) throw error
+
+        // Generate a link to view the letter
+        const letterId = data[0].id
+        const link = `${window.location.origin}/letter/${letterId}`
+        // Copy the link to clipboard
+        await navigator.clipboard.writeText(link)
+        alert('Link copied to clipboard: ' + link)
+      } catch (err) {
+        console.error('Error sending letter:', err.message)
+      }
+    }
+
     return {
-      editor
+      editor,
+      sendLetter
     }
   }
 }
 </script>
 
 <style scoped>
-.app-container {
+.lettercomposer {
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -55,6 +87,7 @@ export default {
 .letter-container {
   padding: var(--m-spacing);
   height: 100%;
+  max-height: 90%;
 }
 .letter {
   border: 1px solid var(--stroke);
@@ -68,14 +101,6 @@ export default {
   box-shadow: 0 2px var(--s-spacing) var(--bg-secondary);
 }
 
-header {
-  border-bottom: var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: end;
-  padding: var(--xs-spacing);
-}
-
 /* editor.js overrides  */
 :deep(.ce-block--selected .ce-block__content) {
   background-color: var(--stroke);
@@ -84,5 +109,12 @@ header {
 
 :deep(.codex-editor) {
   height: 0;
+}
+
+@media only screen and (max-width: 1000px) {
+  .letter-container {
+    padding: var(--s-spacing);
+    margin-bottom: 100px;
+  }
 }
 </style>

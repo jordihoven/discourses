@@ -1,5 +1,5 @@
 {
-  "name": "cinemagnet",
+  "name": "discourses",
   "version": "0.0.0",
   "private": true,
   "type": "module",
@@ -15,6 +15,7 @@
   "dependencies": {
     "@editorjs/editorjs": "^2.30.7",
     "@editorjs/header": "^2.8.8",
+    "@supabase/supabase-js": "^2.46.2",
     "@vueuse/core": "^11.1.0",
     "axios": "^1.7.5",
     "lucide-vue-next": "^0.436.0",

@@ -21,8 +21,38 @@ html,
   margin: 0;
 }
 
+/* possible needed for iOS. Who knows... 💀 */
+body {
+  padding-top: env(safe-area-inset-top);
+}
+
 .clip-text {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+header {
+  border-bottom: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: end;
+  padding: var(--xs-spacing);
+}
+
+.tile {
+  border: var(--border);
+  border-radius: var(--radius);
+}
+
+.letter {
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius);
+  max-width: 840px;
+  margin: 0 auto;
+  padding: var(--xs-spacing);
+  background-color: var(--bg-primary);
+  height: 100%;
+  overflow: auto;
+  box-shadow: 0 2px var(--s-spacing) var(--bg-secondary);
 }
