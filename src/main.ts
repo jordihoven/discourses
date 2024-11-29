@@ -10,7 +10,7 @@ import router from './router'
 const app = createApp(App)
 
 // TODO: move icons import to it's own file...
-import { Hourglass, Sparkles, Calendar, Clapperboard, Star, Search, RemoveFormatting, Mailbox } from 'lucide-vue-next'
+import { Hourglass, Sparkles, Calendar, Clapperboard, Star, Search, RemoveFormatting, Mailbox, Copy } from 'lucide-vue-next'
 
 // icons to use in the app...
 app.component('LucideHourglass', Hourglass)
@@ -21,6 +21,7 @@ app.component('LucideStar', Star)
 app.component('LucideSearch', Search)
 app.component('LucideRemoveFormatting', RemoveFormatting)
 app.component('LucideMailbox', Mailbox)
+app.component('LucideCopy', Copy)
 
 app.use(createPinia())
 app.use(router)

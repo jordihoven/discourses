@@ -4,7 +4,7 @@
   <div v-if="isSmallScreen" class="overlay">
     <div class="message">
       <h1>📺</h1>
-      <h2>Use a larger screen</h2>
+      <p class="medium">Use a larger screen</p>
       <span>Discourses is build for deep, thoughtfull conversation. It's not a place to find short, meaningless distractions.</span>
     </div>
   </div>
@@ -54,8 +54,13 @@ onBeforeUnmount(() => {
   display: flex;
   flex-direction: column;
   gap: var(--xs-spacing);
-  color: var(--text-secondary);
   text-align: center;
   max-width: 80%;
+}
+.message p {
+  color: white;
+}
+.message span {
+  color: darkgrey;
 }
 </style>

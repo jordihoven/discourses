@@ -1,15 +1,32 @@
 <template>
-  <div class="lettercomposer">
+  <div :class="{ 'modal-active': showModal }" class="lettercomposer">
     <header>
       <button @click="thrashDraft" :disabled="!editorContent">
         <LucideRemoveFormatting class="icon"></LucideRemoveFormatting>
         Thrash draft
       </button>
-      <button @click="sendLetter"><LucideMailbox class="icon" />Send letter</button>
+      <button @click="generateLetterLink"><LucideMailbox class="icon" />Send letter</button>
     </header>
     <div class="letter-container">
       <div ref="editor" class="letter"></div>
     </div>
+
+    <!-- Modal to show generated link and copy option -->
+    <transition name="fade">
+      <div v-if="showModal" ref="modal" class="modal">
+        <div class="modal-content">
+          <p class="medium">Letter shared</p>
+          <span>Your letter is shared publicly. Copy the link and send it to anyone, anywhere</span>
+          <div class="copy-letter">
+            <a class="letter-link" :href="generatedLink" target="_blank">{{ generatedLink }}</a>
+            <button @click="copyLink">
+              <LucideCopy class="icon" />
+              Copy link
+            </button>
+          </div>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
 
@@ -19,15 +36,18 @@ import EditorJS from '@editorjs/editorjs'
 import Header from '@editorjs/header'
 import { supabase } from '@/lib/supabaseClient'
 import { toast } from 'toaster-ts'
-import { useClipboard } from '@vueuse/core'
+import { useClipboard, onClickOutside } from '@vueuse/core'
 
 export default {
   name: 'LetterComposer',
   setup() {
     const editor = ref(null)
     let editorInstance = null
-    const editorContent = ref(null) // This will act like a v-model
+    const editorContent = ref(null)
+    const showModal = ref(false)
+    const generatedLink = ref('')
     const { copy } = useClipboard()
+    const modal = ref(null) // Reference for the modal
 
     onMounted(() => {
       // Initialize Editor.js
@@ -60,36 +80,50 @@ export default {
       }
     }
 
-    const sendLetter = async () => {
+    const generateLetterLink = async () => {
       if (!editorInstance) return
       try {
-        // Save the Editor.js content
         const content = await editorInstance.save()
-        // Insert the letter into the Supabase database
         const { data, error } = await supabase
           .from('letters')
-          .insert([
-            {
-              content_json: content // Store the Editor.js JSON content
-            }
-          ])
+          .insert([{ content_json: content }])
           .select()
+
         if (error) throw error
-        // Generate a link to view the letter
+
         const letterId = data[0].id
-        const link = `${window.location.origin}/letter/${letterId}`
-        copy(link) // copy link to clipboard using vueuse
-        toast.success('Copied to clipboard! 🎉') // throw success toast
+        generatedLink.value = `${window.location.origin}/letter/${letterId}`
+
+        showModal.value = true // Show the modal once the link is generated
       } catch (err) {
-        console.error('Error sending letter: ', err.message)
+        console.error('Error generating link: ', err.message)
         toast.error('Something went wrong 🙊 ', err.message)
       }
     }
+
+    const copyLink = () => {
+      if (generatedLink.value) {
+        copy(generatedLink.value)
+        toast.success('Copied to clipboard! 🎉')
+      }
+    }
+
+    const closeModal = () => {
+      showModal.value = false
+    }
+
+    onClickOutside(modal, closeModal)
+
     return {
       editor,
-      sendLetter,
       thrashDraft,
-      editorContent
+      editorContent,
+      generatedLink,
+      showModal,
+      copyLink,
+      closeModal,
+      generateLetterLink,
+      modal
     }
   }
 }
@@ -127,5 +161,52 @@ export default {
 header {
   display: flex;
   gap: var(--xs-spacing);
+}
+
+.modal {
+  position: fixed;
+  top: 44px;
+  right: var(--xs-spacing);
+  z-index: 999;
+}
+
+.modal-content {
+  background-color: var(--bg-primary);
+  padding: var(--xs-spacing);
+  border-radius: var(--radius);
+  border: var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: var(--xs-spacing);
+}
+
+.letter-link {
+  padding: var(--xs-spacing);
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius);
+  border: var(--border);
+  transition: var(--transition);
+}
+.letter-link:hover {
+  filter: brightness(95%);
+}
+
+.modal-active .letter-container {
+  pointer-events: none; /* Disable pointer events for the editor when the modal is visible */
+}
+.copy-letter {
+  display: flex;
+  gap: var(--xs-spacing);
+  align-items: center;
+}
+
+/* Fade transition */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
