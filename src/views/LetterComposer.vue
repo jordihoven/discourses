@@ -17,10 +17,9 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import EditorJS from '@editorjs/editorjs'
 import Header from '@editorjs/header'
-
 import { supabase } from '@/lib/supabaseClient'
-
 import { toast } from 'toaster-ts'
+import { useClipboard } from '@vueuse/core'
 
 export default {
   name: 'LetterComposer',
@@ -28,6 +27,7 @@ export default {
     const editor = ref(null)
     let editorInstance = null
     const editorContent = ref(null) // This will act like a v-model
+    const { copy } = useClipboard()
 
     onMounted(() => {
       // Initialize Editor.js
@@ -36,7 +36,7 @@ export default {
         tools: {
           header: Header
         },
-        placeholder: 'Start writing your letter here...',
+        placeholder: "What's on your mind?",
         onChange: async () => {
           // Update the reactive property with editor content
           const content = await editorInstance.save()
@@ -44,8 +44,6 @@ export default {
         }
       })
     })
-
-    console.log('env vars', import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY)
 
     onBeforeUnmount(() => {
       if (editorInstance) {
@@ -64,7 +62,6 @@ export default {
 
     const sendLetter = async () => {
       if (!editorInstance) return
-
       try {
         // Save the Editor.js content
         const content = await editorInstance.save()
@@ -73,8 +70,7 @@ export default {
           .from('letters')
           .insert([
             {
-              content_json: content, // Store the Editor.js JSON content
-              content: JSON.stringify(content.blocks.map((block) => block.text)).replace(/["[\],]/g, ' ') // Optional: Save plain text
+              content_json: content // Store the Editor.js JSON content
             }
           ])
           .select()
@@ -82,9 +78,8 @@ export default {
         // Generate a link to view the letter
         const letterId = data[0].id
         const link = `${window.location.origin}/letter/${letterId}`
-        // Copy the link to clipboard
-        await navigator.clipboard.writeText(link)
-        toast.success('Link copied to clipboard! 🔗🎉')
+        copy(link) // copy link to clipboard using vueuse
+        toast.success('Copied to clipboard! 🎉') // throw success toast
       } catch (err) {
         console.error('Error sending letter: ', err.message)
         toast.error('Something went wrong 🙊 ', err.message)
@@ -110,7 +105,7 @@ export default {
 .letter-container {
   padding: var(--m-spacing);
   height: 100%;
-  max-height: 90%;
+  max-height: 95%;
 }
 
 /* editor.js overrides  */
@@ -118,7 +113,6 @@ export default {
   background-color: var(--stroke);
   border-radius: var(--radius);
 }
-
 :deep(.codex-editor) {
   height: 0;
 }
