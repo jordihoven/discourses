@@ -1,7 +1,11 @@
 <template>
   <div class="lettercomposer">
     <header>
-      <button @click="sendLetter"><LucideSparkles class="icon" />Send letter</button>
+      <button @click="thrashDraft" :disabled="!editorContent">
+        <LucideRemoveFormatting class="icon"></LucideRemoveFormatting>
+        Thrash draft
+      </button>
+      <button @click="sendLetter"><LucideMailbox class="icon" />Send letter</button>
     </header>
     <div class="letter-container">
       <div ref="editor" class="letter"></div>
@@ -16,11 +20,14 @@ import Header from '@editorjs/header'
 
 import { supabase } from '@/lib/supabaseClient'
 
+import { toast } from 'toaster-ts'
+
 export default {
   name: 'LetterComposer',
   setup() {
     const editor = ref(null)
     let editorInstance = null
+    const editorContent = ref(null) // This will act like a v-model
 
     onMounted(() => {
       // Initialize Editor.js
@@ -29,9 +36,16 @@ export default {
         tools: {
           header: Header
         },
-        placeholder: 'Start writing your letter here...'
+        placeholder: 'Start writing your letter here...',
+        onChange: async () => {
+          // Update the reactive property with editor content
+          const content = await editorInstance.save()
+          editorContent.value = content.blocks.length > 0 ? content : null
+        }
       })
     })
+
+    console.log('env vars', import.meta.env.VITE_SUPABASE_URL, import.meta.env.VITE_SUPABASE_ANON_KEY)
 
     onBeforeUnmount(() => {
       if (editorInstance) {
@@ -39,6 +53,13 @@ export default {
         editorInstance.destroy()
       }
     })
+
+    const thrashDraft = async () => {
+      if (editorInstance) {
+        await editorInstance.render({ blocks: [] })
+        editorContent.value = null // Clear reactive property
+      }
+    }
 
     const sendLetter = async () => {
       if (!editorInstance) return
@@ -57,21 +78,22 @@ export default {
           ])
           .select()
         if (error) throw error
-
         // Generate a link to view the letter
         const letterId = data[0].id
         const link = `${window.location.origin}/letter/${letterId}`
         // Copy the link to clipboard
         await navigator.clipboard.writeText(link)
-        alert('Link copied to clipboard: ' + link)
+        toast.success('Link copied to clipboard! 🔗🎉')
       } catch (err) {
-        console.error('Error sending letter:', err.message)
+        console.error('Error sending letter: ', err.message)
+        toast.error('Something went wrong 🙊 ', err.message)
       }
     }
-
     return {
       editor,
-      sendLetter
+      sendLetter,
+      thrashDraft,
+      editorContent
     }
   }
 }
@@ -89,17 +111,6 @@ export default {
   height: 100%;
   max-height: 90%;
 }
-.letter {
-  border: 1px solid var(--stroke);
-  border-radius: var(--radius);
-  max-width: 840px;
-  margin: 0 auto;
-  padding: var(--l-spacing) var(--xs-spacing);
-  background-color: var(--bg-primary);
-  height: 100%;
-  overflow: auto;
-  box-shadow: 0 2px var(--s-spacing) var(--bg-secondary);
-}
 
 /* editor.js overrides  */
 :deep(.ce-block--selected .ce-block__content) {
@@ -116,5 +127,10 @@ export default {
     padding: var(--s-spacing);
     margin-bottom: 100px;
   }
+}
+
+header {
+  display: flex;
+  gap: var(--xs-spacing);
 }
 </style>

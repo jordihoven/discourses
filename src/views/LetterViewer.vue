@@ -69,10 +69,6 @@ export default {
   padding: var(--xs-spacing);
 }
 
-.letter {
-  height: 90%;
-}
-
 .letter .block {
   margin-bottom: 1em;
   border: 1px solid transparent;

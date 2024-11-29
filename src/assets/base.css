@@ -123,17 +123,18 @@ button {
   display: flex;
   gap: 4px;
   align-items: center;
-  border: 1px solid var(--stroke);
+  border: var(--border);
   background: var(--bg-secondary);
   border-radius: var(--radius);
   font-size: var(--span);
   font-weight: var(--medium);
   height: fit-content;
   padding: 6px var(--xs-spacing);
+  transition: var(--transition);
 }
-
 button:hover {
   cursor: pointer;
+  filter: brightness(90%);
 }
 
 .link {
@@ -159,7 +160,6 @@ button:hover {
 .icon {
   width: 16px;
   height: 16px;
-  color: var(--text-secondary);
 }
 
 .medium {
@@ -173,4 +173,8 @@ button:hover {
   border-color: var(--stroke);
   color: var(--text-primary);
   box-shadow: none;
+}
+
+:disabled {
+  pointer-events: none;
 }

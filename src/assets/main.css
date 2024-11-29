@@ -24,6 +24,7 @@ html,
 /* possible needed for iOS. Who knows... 💀 */
 body {
   padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .clip-text {
@@ -52,7 +53,7 @@ header {
   margin: 0 auto;
   padding: var(--xs-spacing);
   background-color: var(--bg-primary);
-  height: 100%;
   overflow: auto;
   box-shadow: 0 2px var(--s-spacing) var(--bg-secondary);
+  height: 95%;
 }

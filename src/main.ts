@@ -1,5 +1,5 @@
 import './assets/main.css'
-import 'toaster-ts/dist/bundle.css';
+import 'toaster-ts/dist/bundle.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
@@ -10,7 +10,7 @@ import router from './router'
 const app = createApp(App)
 
 // TODO: move icons import to it's own file...
-import { Hourglass, Sparkles, Calendar, Clapperboard, Star, Search } from 'lucide-vue-next'
+import { Hourglass, Sparkles, Calendar, Clapperboard, Star, Search, RemoveFormatting, Mailbox } from 'lucide-vue-next'
 
 // icons to use in the app...
 app.component('LucideHourglass', Hourglass)
@@ -19,6 +19,8 @@ app.component('LucideCalendar', Calendar)
 app.component('LucideClapperboard', Clapperboard)
 app.component('LucideStar', Star)
 app.component('LucideSearch', Search)
+app.component('LucideRemoveFormatting', RemoveFormatting)
+app.component('LucideMailbox', Mailbox)
 
 app.use(createPinia())
 app.use(router)
