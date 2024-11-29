@@ -53,7 +53,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .letterviewer {
   display: flex;
   flex-direction: column;
@@ -76,5 +76,9 @@ export default {
 .shared-header {
   display: flex;
   gap: var(--xs-spacing);
+}
+
+.letter {
+  padding: 4vw;
 }
 </style>

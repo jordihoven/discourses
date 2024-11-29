@@ -2,8 +2,8 @@
   <div :class="{ 'modal-active': showModal }" class="lettercomposer">
     <header>
       <button @click="thrashDraft" :disabled="!editorContent">
-        <LucideRemoveFormatting class="icon"></LucideRemoveFormatting>
-        Thrash draft
+        <LucideRemoveFormatting class="icon" />
+        Clear draft
       </button>
       <button @click="openModal" :disabled="!editorContent"><LucideMailbox class="icon" />Share letter</button>
     </header>
