@@ -1,13 +1,13 @@
 <template>
   <RouterView />
   <section id="toaster-wrapper" data-position="bottom-center"></section>
-  <div v-if="isSmallScreen" class="overlay">
+  <!-- <div v-if="isSmallScreen" class="overlay">
     <div class="message">
       <h1>📺</h1>
       <p class="medium">Use a larger screen</p>
       <span>Discourses is build for deep, thoughtfull conversation. It's not a place to find short, meaningless distractions.</span>
     </div>
-  </div>
+  </div> -->
 </template>
 
 <script setup lang="ts">

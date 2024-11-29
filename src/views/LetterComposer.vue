@@ -5,7 +5,7 @@
         <LucideRemoveFormatting class="icon"></LucideRemoveFormatting>
         Thrash draft
       </button>
-      <button @click="generateLetterLink"><LucideMailbox class="icon" />Send letter</button>
+      <button @click="openModal" :disabled="!editorContent"><LucideMailbox class="icon" />Share letter</button>
     </header>
     <div class="letter-container">
       <div ref="editor" class="letter"></div>
@@ -15,9 +15,15 @@
     <transition name="fade">
       <div v-if="showModal" ref="modal" class="modal">
         <div class="modal-content">
-          <p class="medium">Letter shared</p>
-          <span>Your letter is shared publicly. Copy the link and send it to anyone, anywhere</span>
-          <div class="copy-letter">
+          <span>Share your letter to anyone, anywhere.</span>
+          <div v-if="!generatedLink" class="copy-letter">
+            <a class="letter-link disabled" href="#">discourses.app/letter/...</a>
+            <button @click="generateLetterLink" :disabled="isGenerating">
+              <LucideLink class="icon" />
+              {{ isGenerating ? 'Generating...' : 'Create Link' }}
+            </button>
+          </div>
+          <div v-else class="copy-letter">
             <a class="letter-link" :href="generatedLink" target="_blank">{{ generatedLink }}</a>
             <button @click="copyLink">
               <LucideCopy class="icon" />
@@ -46,6 +52,7 @@ export default {
     const editorContent = ref(null)
     const showModal = ref(false)
     const generatedLink = ref('')
+    const isGenerating = ref(false)
     const { copy } = useClipboard()
     const modal = ref(null) // Reference for the modal
 
@@ -83,6 +90,7 @@ export default {
     const generateLetterLink = async () => {
       if (!editorInstance) return
       try {
+        isGenerating.value = true
         const content = await editorInstance.save()
         const { data, error } = await supabase
           .from('letters')
@@ -93,19 +101,26 @@ export default {
 
         const letterId = data[0].id
         generatedLink.value = `${window.location.origin}/letter/${letterId}`
+        toast.success('Link generated successfully! 🎉')
 
         showModal.value = true // Show the modal once the link is generated
       } catch (err) {
         console.error('Error generating link: ', err.message)
         toast.error('Something went wrong 🙊 ', err.message)
+      } finally {
+        isGenerating.value = false
       }
     }
 
     const copyLink = () => {
       if (generatedLink.value) {
         copy(generatedLink.value)
-        toast.success('Copied to clipboard! 🎉')
+        toast.success('Copied to clipboard! 🔗')
       }
+    }
+
+    const openModal = () => {
+      showModal.value = true
     }
 
     const closeModal = () => {
@@ -119,8 +134,10 @@ export default {
       thrashDraft,
       editorContent,
       generatedLink,
+      isGenerating,
       showModal,
       copyLink,
+      openModal,
       closeModal,
       generateLetterLink,
       modal
@@ -136,12 +153,6 @@ export default {
   height: 100vh;
 }
 
-.letter-container {
-  padding: var(--m-spacing);
-  height: 100%;
-  max-height: 95%;
-}
-
 /* editor.js overrides  */
 :deep(.ce-block--selected .ce-block__content) {
   background-color: var(--stroke);
@@ -149,13 +160,6 @@ export default {
 }
 :deep(.codex-editor) {
   height: 0;
-}
-
-@media only screen and (max-width: 1000px) {
-  .letter-container {
-    padding: var(--s-spacing);
-    margin-bottom: 100px;
-  }
 }
 
 header {
@@ -186,6 +190,11 @@ header {
   border-radius: var(--radius);
   border: var(--border);
   transition: var(--transition);
+  flex: 1;
+  width: 15em;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 .letter-link:hover {
   filter: brightness(95%);

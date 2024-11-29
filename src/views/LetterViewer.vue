@@ -4,7 +4,7 @@
       <span>Written in</span>
       <button @click="openDiscourses">📜 Discourses</button>
     </header>
-    <div class="letter-viewer">
+    <div class="letter-container">
       <div v-if="letterContent" class="letter">
         <div v-for="block in letterContent.blocks" :key="block.id" class="block">
           <!-- Render content dynamically based on block type -->
@@ -59,16 +59,6 @@ export default {
   flex-direction: column;
   height: 100vh;
 }
-.letter-container {
-  padding: var(--m-spacing);
-  height: 100%;
-}
-.letter-viewer {
-  height: 100%;
-  margin-top: var(--s-spacing);
-  padding: var(--xs-spacing);
-}
-
 .letter .block {
   margin-bottom: 1em;
   border: 1px solid transparent;
