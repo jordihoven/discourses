@@ -58,6 +58,7 @@ export default {
       if (editorInstance) {
         await editorInstance.render({ blocks: [] })
         editorContent.value = null // Clear reactive property
+        toast.success('Draft cleared 🍃')
       }
     }
 
