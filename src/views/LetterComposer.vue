@@ -1,6 +1,7 @@
 <template>
   <div :class="{ 'modal-active': showModal }" class="lettercomposer">
     <header>
+      <button @click="signOut">Sign out</button>
       <button @click="thrashDraft" :disabled="!editorContent">
         <LucideRemoveFormatting class="icon" />
         Clear draft
@@ -127,6 +128,18 @@ export default {
       showModal.value = false
     }
 
+    async function signOut() {
+      const { error } = await supabase.auth.signOut()
+      if (error) {
+        console.error('Error signing out:', error.message)
+      } else {
+        toast.success('Logged out')
+        console.log('Successfully signed out')
+        // Optionally, redirect the user to a login page
+        window.location.href = '/login' // Adjust path as needed
+      }
+    }
+
     onClickOutside(modal, closeModal)
 
     return {
@@ -140,7 +153,8 @@ export default {
       openModal,
       closeModal,
       generateLetterLink,
-      modal
+      modal,
+      signOut
     }
   }
 }

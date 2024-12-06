@@ -143,6 +143,20 @@ button:hover {
   width: fit-content;
 }
 
+input {
+  background-color: var(--bg-secondary);
+  border-radius: var(--radius);
+  border: var(--border);
+  padding: 4px var(--xs-spacing);
+  transition: var(--transition);
+  font-size: var(--span);
+}
+input:hover,
+input:active {
+  border: 1px solid var(--primary);
+  box-shadow: 0px 0px 4px var(--primary);
+}
+
 /* loader animation. simply add .loader to any element to make it rotate */
 @keyframes rotate {
   0% {
