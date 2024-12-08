@@ -1,11 +1,14 @@
 <template>
   <div :class="{ 'modal-active': showModal }" class="lettercomposer">
     <header>
-      <button @click="thrashDraft" :disabled="!editorContent">
-        <LucideRemoveFormatting class="icon" />
-        Clear draft
-      </button>
-      <button @click="openModal" :disabled="!editorContent"><LucideMailbox class="icon" />Share letter</button>
+      <User></User>
+      <div class="page-actions">
+        <button @click="thrashDraft" :disabled="!editorContent">
+          <LucideRemoveFormatting class="icon" />
+          Clear draft
+        </button>
+        <button @click="openModal" :disabled="!editorContent"><LucideMailbox class="icon" />Share letter</button>
+      </div>
     </header>
     <div class="letter-container">
       <div ref="editor" class="letter"></div>
@@ -43,9 +46,13 @@ import Header from '@editorjs/header'
 import { supabase } from '@/lib/supabaseClient'
 import { toast } from 'toaster-ts'
 import { useClipboard, onClickOutside } from '@vueuse/core'
+import User from '@/components/molecules/User.vue'
 
 export default {
   name: 'LetterComposer',
+  components: {
+    User // Register the User component here
+  },
   setup() {
     const editor = ref(null)
     let editorInstance = null
@@ -164,6 +171,12 @@ export default {
 
 header {
   display: flex;
+  justify-content: space-between;
+  gap: var(--xs-spacing);
+}
+
+.page-actions {
+  display: flex;
   gap: var(--xs-spacing);
 }
 
@@ -175,7 +188,7 @@ header {
 }
 
 .modal-content {
-  background-color: var(--bg-primary);
+  background-color: var(--background1);
   padding: var(--xs-spacing);
   border-radius: var(--radius);
   border: var(--border);
@@ -186,7 +199,7 @@ header {
 
 .letter-link {
   padding: var(--xs-spacing);
-  background-color: var(--bg-secondary);
+  background-color: var(--background2);
   border-radius: var(--radius);
   border: var(--border);
   transition: var(--transition);

@@ -51,7 +51,7 @@ const { isOverDropZone } = useDropZone(dropZoneRef, onDrop)
 
 <style scoped>
 .dropzone {
-  background-color: var(--bg-secondary);
+  background-color: var(--background2);
   border: 2px dashed var(--stroke);
   border-radius: var(--radius);
   padding: var(--s-spacing);

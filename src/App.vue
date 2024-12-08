@@ -13,6 +13,9 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router'
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { useUserStore } from '@/stores/user'
+
+const userStore = useUserStore()
 
 // Create a reactive ref for the screen size check
 const isSmallScreen = ref(false)
@@ -24,6 +27,7 @@ const checkScreenSize = () => {
 
 // Run the check when the component mounts
 onMounted(() => {
+  userStore.fetchUser()
   checkScreenSize() // Check screen size on mount
   window.addEventListener('resize', checkScreenSize) // Add resize event listener
 })

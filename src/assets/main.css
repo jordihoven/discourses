@@ -53,9 +53,9 @@ header {
   height: 100%;
   margin: 0 auto;
   padding: var(--xs-spacing);
-  background-color: var(--bg-primary);
+  background-color: var(--background1);
   overflow: auto;
-  box-shadow: 0 2px var(--s-spacing) var(--bg-secondary);
+  box-shadow: 0 2px var(--s-spacing) var(--background2);
   max-width: 55em;
   padding-top: var(--xl-spacing);
 }
@@ -74,4 +74,13 @@ header {
   .letter {
     padding-top: var(--xxs-spacing);
   }
+}
+
+/* toaster-ts overrides */
+#app #toaster-wrapper .toast {
+  border-radius: var(--radius);
+  background-color: var(--background1);
+  border-color: var(--stroke);
+  color: var(--text1);
+  box-shadow: none;
 }
