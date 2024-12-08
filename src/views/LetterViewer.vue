@@ -68,7 +68,7 @@ export default {
 }
 
 .letter .block:hover {
-  background-color: var(--bg-secondary);
+  background-color: var(--background2);
   border: var(--border);
   cursor: pointer;
 }

@@ -5,23 +5,20 @@
 
     <!-- Email Input -->
     <div class="email-step" v-if="step === 'email'">
-      <input v-model="email" type="email" placeholder="Enter your email" />
+      <input v-model="email" ref="emailInput" type="email" placeholder="Enter your email" @keydown.enter="sendCode" />
       <button @click="sendCode">Continue</button>
     </div>
 
     <!-- Code Input -->
     <div class="email-step" v-if="step === 'code'">
-      <input v-model="code" type="text" placeholder="Code from email" />
+      <input v-model="code" ref="codeInput" type="text" placeholder="Code from email" @keydown.enter="verifyCode" />
       <button @click="verifyCode">Login</button>
     </div>
-
-    <!-- Error message -->
-    <div v-if="error" class="error">{{ error }}</div>
   </div>
 </template>
 
 <script>
-import { ref } from 'vue'
+import { ref, onMounted, nextTick } from 'vue'
 import { supabase } from '@/lib/supabaseClient'
 import { toast } from 'toaster-ts'
 import { useRouter } from 'vue-router'
@@ -31,8 +28,18 @@ export default {
     const email = ref('')
     const code = ref('')
     const error = ref('')
-    const step = ref('email') // Step can be 'email' or 'code'
+    const step = ref('email')
     const router = useRouter() // Access router
+
+    const emailInput = ref(null)
+    const codeInput = ref(null)
+
+    // Autofocus on the email input field when the component mounts
+    onMounted(() => {
+      if (emailInput.value) {
+        emailInput.value.focus()
+      }
+    })
 
     // Send the code to the user's email
     const sendCode = async () => {
@@ -43,13 +50,19 @@ export default {
 
         if (sendError) {
           error.value = sendError.message
+          toast.error(error.value)
         } else {
           step.value = 'code' // Move to the code entry step
           error.value = '' // Clear any previous errors
-          toast.success(`Code sent to ${email.value}`)
+          toast.success(`Code sent to ${email.value} ✨`)
+          await nextTick() // Wait for DOM update
+          if (codeInput.value) {
+            codeInput.value.focus() // Autofocus on the code input field
+          }
         }
       } catch (err) {
-        error.value = 'Something went wrong. Please try again.'
+        error.value = 'Something went wrong. Please try again 💀'
+        toast.error(error.value)
       }
     }
 
@@ -64,13 +77,15 @@ export default {
 
         if (verifyError) {
           error.value = verifyError.message
+          toast.error(error.value)
         } else {
           error.value = '' // Clear any previous errors
-          toast.success('You are now logged in!')
+          toast.success('You are now logged in 🎉')
           router.push({ name: 'LetterComposer' })
         }
       } catch (err) {
-        error.value = 'Something went wrong during verification.'
+        error.value = 'Something went wrong during verification 💀'
+        toast.error(error.value)
       }
     }
 
@@ -80,7 +95,9 @@ export default {
       sendCode,
       verifyCode,
       error,
-      step
+      step,
+      emailInput,
+      codeInput
     }
   }
 }
@@ -105,5 +122,9 @@ export default {
 
 .email-step button {
   justify-content: center;
+}
+
+.email-step input {
+  font-size: var(--body);
 }
 </style>
