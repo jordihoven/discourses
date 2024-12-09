@@ -2,13 +2,11 @@
   <div class="login">
     <h3>Let's start writing</h3>
     <span>Confirm your email to continue</span>
-
     <!-- Email Input -->
     <div class="email-step" v-if="step === 'email'">
       <input v-model="email" ref="emailInput" type="email" placeholder="Enter your email" @keydown.enter="sendCode" />
       <button @click="sendCode">Continue</button>
     </div>
-
     <!-- Code Input -->
     <div class="email-step" v-if="step === 'code'">
       <input v-model="code" ref="codeInput" type="text" placeholder="Code from email" @keydown.enter="verifyCode" />
@@ -29,7 +27,7 @@ export default {
     const code = ref('')
     const error = ref('')
     const step = ref('email')
-    const router = useRouter() // Access router
+    const router = useRouter()
 
     const emailInput = ref(null)
     const codeInput = ref(null)

@@ -17,8 +17,7 @@ const router = createRouter({
       path: '/letter/:id',
       name: 'LetterViewer',
       component: LetterViewer,
-      props: true,
-      meta: { requiresAuth: true } // This route requires authentication
+      props: true
     },
     {
       path: '/login',

@@ -1,8 +1,16 @@
 <template>
-  <div class="user" v-if(userStore.user) @click="toggleDropdown">
-    <span class="medium"> {{ getUsername(userStore.user?.email) }} </span>
-    <div v-if="isDropdownVisible" class="dropdown">
-      <button @click="signOut" title="Logout">Logout<LucideLogOut class="icon" /></button>
+  <div>
+    <div class="user" v-if="userStore.user" @click="toggleDropdown">
+      <span class="medium"> {{ getUsername(userStore.user?.email) }} </span>
+      <div v-if="isDropdownVisible" class="dropdown">
+        <button @click="signOut">
+          Logout
+          <LucideLogOut class="icon" />
+        </button>
+      </div>
+    </div>
+    <div class="signup" v-else>
+      <button @click="createAccount">Create account</button>
     </div>
   </div>
 </template>
@@ -11,6 +19,7 @@
 import { ref } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { supabase } from '@/lib/supabaseClient'
+import { useRouter } from 'vue-router'
 
 import { toast } from 'toaster-ts'
 
@@ -18,10 +27,15 @@ export default {
   name: 'UserComponent',
   setup() {
     const userStore = useUserStore()
+    const router = useRouter()
 
     const isDropdownVisible = ref(false)
     function toggleDropdown() {
       isDropdownVisible.value = !isDropdownVisible.value
+    }
+
+    function createAccount() {
+      router.push({ name: 'Login' })
     }
 
     function getUsername(email) {
@@ -34,7 +48,7 @@ export default {
         console.error('Error signing out:', error.message)
       } else {
         toast.success('Logged out 👋🏻')
-        window.location.href = '/login'
+        router.push({ name: 'Login' })
       }
     }
 
@@ -43,7 +57,8 @@ export default {
       signOut,
       isDropdownVisible,
       toggleDropdown,
-      getUsername
+      getUsername,
+      createAccount
     }
   }
 }

@@ -1,19 +1,22 @@
 <template>
   <div :class="{ 'modal-active': showModal }" class="lettercomposer">
-    <header>
-      <User></User>
-      <div class="page-actions">
-        <button @click="thrashDraft" :disabled="!editorContent">
+    <PageHeader>
+      <template #actions>
+        <button @click="thrashDraft" :disabled="!editorContent || generatedLink">
           <LucideRemoveFormatting class="icon" />
           Clear draft
         </button>
         <button @click="openModal" :disabled="!editorContent"><LucideMailbox class="icon" />Share letter</button>
-      </div>
-    </header>
+      </template>
+    </PageHeader>
     <div class="letter-container">
-      <div ref="editor" class="letter"></div>
+      <div ref="editor" class="letter" :class="{ disabled: generatedLink }"></div>
     </div>
-
+    <div class="shared-notice" v-if="generatedLink">
+      <p>Letter is shared</p>
+      <span>Shared letters can't be edited...</span>
+      <button @click="startNewLetter">New letter</button>
+    </div>
     <!-- Modal to show generated link and copy option -->
     <transition name="fade">
       <div v-if="showModal" ref="modal" class="modal">
@@ -46,19 +49,19 @@ import Header from '@editorjs/header'
 import { supabase } from '@/lib/supabaseClient'
 import { toast } from 'toaster-ts'
 import { useClipboard, onClickOutside } from '@vueuse/core'
-import User from '@/components/molecules/User.vue'
+import PageHeader from '@/components/organisms/PageHeader.vue'
 
 export default {
   name: 'LetterComposer',
   components: {
-    User // Register the User component here
+    PageHeader
   },
   setup() {
     const editor = ref(null)
     let editorInstance = null
     const editorContent = ref(null)
     const showModal = ref(false)
-    const generatedLink = ref('')
+    const generatedLink = ref(null)
     const isGenerating = ref(false)
     const { copy } = useClipboard()
     const modal = ref(null) // Reference for the modal
@@ -134,6 +137,16 @@ export default {
       showModal.value = false
     }
 
+    const startNewLetter = async () => {
+      if (editorInstance) {
+        await editorInstance.render({ blocks: [] }) // Clear the editor
+        editorContent.value = null // Reset the reactive content
+        generatedLink.value = null // Remove the generated link
+        showModal.value = false // Hide the modal if it's open
+        toast.success('Ready to write a new letter! ✨')
+      }
+    }
+
     onClickOutside(modal, closeModal)
 
     return {
@@ -147,7 +160,8 @@ export default {
       openModal,
       closeModal,
       generateLetterLink,
-      modal
+      modal,
+      startNewLetter
     }
   }
 }
@@ -158,26 +172,6 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100vh;
-}
-
-/* editor.js overrides  */
-:deep(.ce-block--selected .ce-block__content) {
-  background-color: var(--stroke);
-  border-radius: var(--radius);
-}
-:deep(.codex-editor) {
-  height: 0;
-}
-
-header {
-  display: flex;
-  justify-content: space-between;
-  gap: var(--xs-spacing);
-}
-
-.page-actions {
-  display: flex;
-  gap: var(--xs-spacing);
 }
 
 .modal {
@@ -220,6 +214,30 @@ header {
   display: flex;
   gap: var(--xs-spacing);
   align-items: center;
+}
+
+#editorjs {
+  font-family: 'Lora', serif !important;
+}
+
+.shared-notice {
+  text-align: center;
+  padding: var(--xs-spacing);
+  border: var(--border);
+  border-radius: var(--radius);
+  width: fit-content;
+  position: absolute;
+  background-color: var(--background2);
+  left: 50%;
+  transform: translateX(-50%);
+  top: 6em;
+  gap: var(--xs-spacing);
+  display: flex;
+  flex-direction: column;
+}
+.shared-notice button {
+  width: 100%;
+  justify-content: center;
 }
 
 /* Fade transition */

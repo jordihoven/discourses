@@ -1,9 +1,11 @@
 <template>
   <div class="letterviewer">
-    <header class="shared-header">
-      <span>Written in</span>
-      <button @click="openDiscourses">📜 Discourses</button>
-    </header>
+    <PageHeader>
+      <template #actions>
+        <div class="written-in"><span>Written in</span> <button @click="openDiscourses">📜 Discourses</button></div>
+      </template>
+    </PageHeader>
+
     <div class="letter-container">
       <div v-if="letterContent" class="letter">
         <div v-for="block in letterContent.blocks" :key="block.id" class="block">
@@ -22,10 +24,16 @@
 <script>
 import { ref, onMounted } from 'vue'
 import { supabase } from '@/lib/supabaseClient'
+import PageHeader from '@/components/organisms/PageHeader.vue'
+import { useRouter } from 'vue-router'
 
 export default {
   name: 'LetterViewer',
+  components: {
+    PageHeader
+  },
   setup() {
+    const router = useRouter()
     const letterContent = ref(null)
     const fetchLetter = async (id) => {
       const { data, error } = await supabase.from('letters').select('content_json').eq('id', id).single() // Fetch a single row
@@ -42,7 +50,8 @@ export default {
     })
 
     function openDiscourses() {
-      window.open('https://mydiscourses.netlify.app', '_blank')
+      const letterComposerPath = router.resolve({ name: 'LetterComposer' }).href
+      window.open(letterComposerPath, '_blank') // push user to letterComposer in a new tab...
     }
 
     return {
@@ -73,12 +82,13 @@ export default {
   cursor: pointer;
 }
 
-.shared-header {
-  display: flex;
-  gap: var(--xs-spacing);
-}
-
 .letter {
   padding: 4vw;
+}
+
+.written-in {
+  display: flex;
+  align-items: center;
+  gap: var(--xs-spacing);
 }
 </style>
