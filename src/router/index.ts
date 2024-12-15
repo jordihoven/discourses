@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LetterComposer from '@/views/LetterComposer.vue'
 import LetterViewer from '@/views/LetterViewer.vue'
+import LetterDrafts from '@/views/LetterDrafts.vue'
 import Login from '@/views/Login.vue' // Import the Login component
 import { supabase } from '@/lib/supabaseClient'
 
@@ -11,7 +12,8 @@ const router = createRouter({
       path: '/',
       name: 'LetterComposer',
       component: LetterComposer,
-      meta: { requiresAuth: true }
+      meta: { requiresAuth: true },
+      props: (route) => ({ draftId: route.query.draftId })
     },
     {
       path: '/letter/:id',
@@ -23,6 +25,12 @@ const router = createRouter({
       path: '/login',
       name: 'Login',
       component: Login
+    },
+    {
+      path: '/drafts',
+      name: 'LetterDrafts',
+      component: LetterDrafts,
+      meta: { requiresAuth: true }
     }
   ]
 })

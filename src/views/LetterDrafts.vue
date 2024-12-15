@@ -1,0 +1,135 @@
+<template>
+  <div class="drafts">
+    <PageHeader></PageHeader>
+    <div class="drafts-container">
+      <div v-if="loading" class="loading">Loading drafts...</div>
+      <div v-if="error" class="error">{{ error }}</div>
+      <div class="drafts-grid" v-if="letters.length > 0">
+        <div v-for="letter in letters" :key="letter.id" class="draft" @click="openDraft(letter.id)">
+          <div v-for="(block, index) in letter.content_json.blocks.slice(0, 3)" :key="index">
+            <p v-html="block.data?.text || 'No content'"></p>
+          </div>
+          <span>{{ formatCreatedAt(letter.created_at) }}</span>
+        </div>
+      </div>
+      <p v-if="letters.length === 0">You don't have any drafts yet.</p>
+    </div>
+  </div>
+</template>
+
+<script>
+import { ref, onMounted } from 'vue'
+import { useUserStore } from '@/stores/user'
+import { supabase } from '@/lib/supabaseClient'
+import PageHeader from '@/components/organisms/PageHeader.vue'
+import { formatDistanceToNow, parseISO } from 'date-fns'
+import { useRouter } from 'vue-router'
+
+export default {
+  name: 'LetterDrafts',
+  components: {
+    PageHeader
+  },
+  setup() {
+    const userStore = useUserStore()
+    const letters = ref([]) // To hold the fetched letters
+    const loading = ref(false)
+    const error = ref(null)
+    const router = useRouter()
+
+    function formatCreatedAt(dateString) {
+      const date = parseISO(dateString) // Parse the ISO string into a Date object
+      return formatDistanceToNow(date, { addSuffix: true }) // Get the relative time, e.g., "2 days ago"
+    }
+
+    // Fetch drafts from the database
+    const fetchDrafts = async () => {
+      if (!userStore.user?.id) {
+        error.value = 'User not authenticated'
+        return
+      }
+
+      loading.value = true
+      error.value = null
+
+      try {
+        const { data, error: fetchError } = await supabase
+          .from('letters')
+          .select('*')
+          .eq('user_id', userStore.user.id)
+          .eq('status', 'draft')
+
+        if (fetchError) {
+          throw new Error(fetchError.message)
+        }
+
+        letters.value = data
+      } catch (err) {
+        error.value = err.message
+      } finally {
+        loading.value = false
+      }
+    }
+
+    const openDraft = (id) => {
+      router.push({ name: 'LetterComposer', query: { draftId: id } })
+    }
+
+    // Call the fetchDrafts method when the component is mounted
+    onMounted(() => {
+      fetchDrafts()
+    })
+
+    return {
+      letters,
+      loading,
+      error,
+      fetchDrafts,
+      formatCreatedAt,
+      openDraft
+    }
+  }
+}
+</script>
+
+<style scoped>
+.drafts-container {
+  padding: var(--xs-spacing);
+  max-width: 720px;
+  margin: 0 auto;
+  width: 100%;
+  margin-top: var(--m-spacing);
+}
+
+.drafts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: var(--xs-spacing);
+}
+
+.draft {
+  background-color: var(--background1);
+  padding: var(--xs-spacing);
+  border-radius: var(--radius);
+  background-color: var(--background1);
+  padding: var(--xs-spacing);
+  border: var(--border);
+  border-radius: var(--radius);
+  justify-content: space-between;
+  display: flex;
+  flex-direction: column;
+  gap: var(--xs-spacing);
+  transition: var(--transition);
+}
+
+.draft:hover {
+  cursor: pointer;
+  filter: brightness(92%);
+}
+
+.drafts {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+</style>

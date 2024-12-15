@@ -1,6 +1,7 @@
 <template>
   <header class="page-header">
     <User />
+    <NavigationDock />
     <div class="actions">
       <slot name="actions"></slot>
     </div>
@@ -9,10 +10,12 @@
 
 <script>
 import User from '@/components/molecules/User.vue'
+import NavigationDock from '@/components/molecules/NavigationDock.vue'
 
 export default {
   components: {
-    User
+    User,
+    NavigationDock
   }
 }
 </script>

@@ -63,6 +63,9 @@ body {
     padding: var(--xs-spacing);
     margin-bottom: 5em;
   }
+  .letter {
+    padding-top: var(--xs-spacing);
+  }
 }
 
 /* toaster-ts overrides */
