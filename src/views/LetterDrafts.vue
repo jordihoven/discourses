@@ -1,19 +1,23 @@
 <template>
   <div class="drafts">
     <PageHeader></PageHeader>
-    <div class="drafts-container">
-      <div v-if="loading" class="loading">Loading drafts...</div>
-      <div v-if="error" class="error">{{ error }}</div>
-      <div class="drafts-grid" v-if="letters.length > 0">
-        <div v-for="letter in letters" :key="letter.id" class="draft" @click="openDraft(letter.id)">
-          <div v-for="(block, index) in letter.content_json.blocks.slice(0, 3)" :key="index">
-            <p v-html="block.data?.text || 'No content'"></p>
+    <main>
+      <div class="drafts-container">
+        <div v-if="loading" class="loading">Loading drafts...</div>
+        <div v-if="error" class="error">{{ error }}</div>
+        <div class="drafts-grid" v-if="letters.length > 0">
+          <div v-for="letter in letters" :key="letter.id" class="draft" @click="openDraft(letter.id)">
+            <div class="draft-content">
+              <div v-for="(block, index) in letter.content_json.blocks.slice(0, 3)" :key="index">
+                <p v-html="block.data?.text || 'No content'"></p>
+              </div>
+            </div>
+            <span>{{ formatCreatedAt(letter.created_at) }}</span>
           </div>
-          <span>{{ formatCreatedAt(letter.created_at) }}</span>
         </div>
+        <p v-if="letters.length === 0">You don't have any drafts yet.</p>
       </div>
-      <p v-if="letters.length === 0">You don't have any drafts yet.</p>
-    </div>
+    </main>
   </div>
 </template>
 
@@ -120,11 +124,18 @@ export default {
   flex-direction: column;
   gap: var(--xs-spacing);
   transition: var(--transition);
+  box-shadow: 0 2px 6px var(--background2);
+  /* height: fit-content; */
 }
-
 .draft:hover {
   cursor: pointer;
   filter: brightness(92%);
+}
+
+.draft-content {
+  max-height: 10em;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .drafts {

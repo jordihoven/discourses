@@ -74,6 +74,11 @@
 }
 
 /* global styles */
+
+main {
+  overflow: auto;
+}
+
 h1 {
   font-size: var(--heading);
   font-weight: var(--semibold);
