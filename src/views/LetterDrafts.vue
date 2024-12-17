@@ -12,10 +12,10 @@
                 <p v-html="block.data?.text || 'No content'"></p>
               </div>
             </div>
-            <span>{{ formatCreatedAt(letter.created_at) }}</span>
+            <span>{{ formatCreatedAt(letter.updated_at) }}</span>
           </div>
         </div>
-        <p v-if="letters.length === 0">You don't have any drafts yet.</p>
+        <p v-if="letters.length === 0">You don't have any drafts yet</p>
       </div>
     </main>
   </div>
@@ -62,6 +62,7 @@ export default {
           .select('*')
           .eq('user_id', userStore.user.id)
           .eq('status', 'draft')
+          .order('updated_at', { ascending: false })
 
         if (fetchError) {
           throw new Error(fetchError.message)

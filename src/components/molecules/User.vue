@@ -1,13 +1,11 @@
 <template>
   <div>
     <div class="user" v-if="userStore.user" @click="toggleDropdown">
-      <span class="medium"> {{ getUsername(userStore.user?.email) }} </span>
-      <div v-if="isDropdownVisible" class="dropdown">
-        <button @click="signOut">
-          Logout
-          <LucideLogOut class="icon" />
-        </button>
-      </div>
+      <span class="medium"> {{ formatUsername(userStore.user?.email) }} </span>
+      <button v-if="isDropdownVisible" class="dropdown" @click="signOut">
+        Logout
+        <LucideLogOut class="icon" />
+      </button>
     </div>
     <div class="signup" v-else>
       <button @click="createAccount">Create account</button>
@@ -20,7 +18,6 @@ import { ref } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { supabase } from '@/lib/supabaseClient'
 import { useRouter } from 'vue-router'
-
 import { toast } from 'toaster-ts'
 
 export default {
@@ -34,12 +31,12 @@ export default {
       isDropdownVisible.value = !isDropdownVisible.value
     }
 
-    function createAccount() {
-      router.push({ name: 'Login' })
+    const formatUsername = (email) => {
+      return email ? email.split('@')[0].slice(0, 2).toUpperCase() : '??'
     }
 
-    function getUsername(email) {
-      return email ? email.split('@')[0] : ''
+    function createAccount() {
+      router.push({ name: 'Login' })
     }
 
     async function signOut() {
@@ -57,7 +54,7 @@ export default {
       signOut,
       isDropdownVisible,
       toggleDropdown,
-      getUsername,
+      formatUsername,
       createAccount
     }
   }
@@ -67,18 +64,24 @@ export default {
 <style scoped>
 .user {
   border: var(--border);
-  border-radius: var(--radius);
+  border-radius: 50px;
   padding: 6px var(--xs-spacing);
   display: flex;
-  gap: var(--xs-spacing);
   align-items: center;
+  justify-content: center;
   background-color: var(--background2);
   transition: var(--transition);
   position: relative;
+  height: 30px;
+  width: 30px;
 }
 .user:hover {
   cursor: pointer;
   filter: brightness(95%);
+}
+
+.user span {
+  font-size: 0.75rem;
 }
 
 /* Style for the dropdown */
@@ -89,13 +92,6 @@ export default {
   border: var(--border);
   background-color: var(--background2);
   border-radius: var(--radius);
-  padding: 2px;
   z-index: 10;
-  width: 100%;
-}
-.dropdown button {
-  width: 100%;
-  display: flex;
-  justify-content: space-between;
 }
 </style>
