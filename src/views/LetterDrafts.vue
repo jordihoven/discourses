@@ -3,19 +3,20 @@
     <PageHeader></PageHeader>
     <main>
       <div class="drafts-container">
-        <div v-if="loading" class="loading">Loading drafts...</div>
-        <div v-if="error" class="error">{{ error }}</div>
-        <div class="drafts-grid" v-if="letters.length > 0">
+        <div v-if="loading" class="loading"><LucideLoader class="loader icon" /></div>
+        <div class="drafts-grid" v-else-if="letters.length > 0">
           <div v-for="letter in letters" :key="letter.id" class="draft" @click="openDraft(letter.id)">
             <div class="draft-content">
               <div v-for="(block, index) in letter.content_json.blocks.slice(0, 3)" :key="index">
                 <p v-html="block.data?.text || 'No content'"></p>
               </div>
             </div>
-            <span>{{ formatCreatedAt(letter.updated_at) }}</span>
+            <span>{{ formatDate(letter.updated_at) }}</span>
           </div>
         </div>
-        <p v-if="letters.length === 0">You don't have any drafts yet</p>
+        <div v-else class="no-drafts">
+          <span>You don't have any drafts yet... 👀</span>
+        </div>
       </div>
     </main>
   </div>
@@ -41,7 +42,7 @@ export default {
     const error = ref(null)
     const router = useRouter()
 
-    function formatCreatedAt(dateString) {
+    function formatDate(dateString) {
       const date = parseISO(dateString) // Parse the ISO string into a Date object
       return formatDistanceToNow(date, { addSuffix: true }) // Get the relative time, e.g., "2 days ago"
     }
@@ -71,6 +72,7 @@ export default {
         letters.value = data
       } catch (err) {
         error.value = err.message
+        toast.error(err.message)
       } finally {
         loading.value = false
       }
@@ -88,9 +90,8 @@ export default {
     return {
       letters,
       loading,
-      error,
       fetchDrafts,
-      formatCreatedAt,
+      formatDate,
       openDraft
     }
   }
@@ -143,5 +144,28 @@ export default {
   display: flex;
   flex-direction: column;
   height: 100vh;
+}
+
+.loading {
+  display: flex;
+  justify-content: center;
+}
+
+.loader {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.no-drafts {
+  display: flex;
+  justify-content: center;
 }
 </style>

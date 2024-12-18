@@ -22,7 +22,8 @@ import {
   Copy,
   Link,
   LogOut,
-  Pencil
+  Pencil,
+  Loader
 } from 'lucide-vue-next'
 
 // icons to use in the app...
@@ -38,6 +39,7 @@ app.component('LucideCopy', Copy)
 app.component('LucideLink', Link)
 app.component('LucideLogOut', LogOut)
 app.component('LucidePencil', Pencil)
+app.component('LucideLoader', Loader)
 
 app.use(createPinia())
 app.use(router)
