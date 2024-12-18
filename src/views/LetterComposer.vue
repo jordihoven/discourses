@@ -2,7 +2,7 @@
   <div :class="{ 'modal-active': showModal }" class="lettercomposer">
     <PageHeader>
       <template #actions>
-        <button @click="openModal" :disabled="!editorContent"><LucideMailbox class="icon" />Share letter</button>
+        <button @click="openModal" :disabled="!editorContent">Sent</button>
       </template>
     </PageHeader>
     <div class="letter-container">

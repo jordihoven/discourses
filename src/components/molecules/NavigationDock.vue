@@ -1,18 +1,20 @@
 <template>
-  <nav>
-    <div class="nav-item">
-      <router-link active-class="active" to="/">
-        <LucidePencil class="icon" />
-        Composer</router-link
-      >
-    </div>
-    <div class="nav-item">
-      <router-link active-class="active" to="/drafts">
-        <LucideMailbox class="icon" />
-        Drafts
-      </router-link>
-    </div>
-  </nav>
+  <div>
+    <nav>
+      <div class="nav-item">
+        <router-link active-class="active" to="/">
+          <LucidePencil class="icon" />
+          Composer</router-link
+        >
+      </div>
+      <div class="nav-item">
+        <router-link active-class="active" to="/drafts">
+          <LucideMailbox class="icon" />
+          Drafts
+        </router-link>
+      </div>
+    </nav>
+  </div>
 </template>
 <!-- fixme: might need router here, could be that it breaks if the page we're routing away from does not have a router instance... -->
 
@@ -32,6 +34,7 @@ nav {
   border-radius: 50px;
   border: var(--border);
   padding: 2px;
+  width: fit-content;
 }
 
 .nav-item a {

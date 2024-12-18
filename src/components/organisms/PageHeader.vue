@@ -1,8 +1,8 @@
 <template>
   <header class="page-header">
-    <User />
-    <NavigationDock />
-    <div class="actions">
+    <User class="header-user" />
+    <NavigationDock class="header-nav" />
+    <div class="header-actions">
       <slot name="actions"></slot>
     </div>
   </header>
@@ -30,8 +30,14 @@ export default {
   padding: var(--xs-spacing);
 }
 
-.actions {
+.header-user {
+  flex: 1;
+}
+
+.header-actions {
   display: flex;
   gap: var(--xs-spacing);
+  flex: 1;
+  justify-content: end;
 }
 </style>
