@@ -22,7 +22,7 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, onMounted } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { supabase } from '@/lib/supabaseClient'
@@ -30,72 +30,56 @@ import PageHeader from '@/components/organisms/PageHeader.vue'
 import { formatDistanceToNow, parseISO } from 'date-fns'
 import { useRouter } from 'vue-router'
 
-export default {
-  name: 'LetterDrafts',
-  components: {
-    PageHeader
-  },
-  setup() {
-    const userStore = useUserStore()
-    const letters = ref([]) // To hold the fetched letters
-    const loading = ref(false)
-    const error = ref(null)
-    const router = useRouter()
+const userStore = useUserStore()
+const letters = ref([]) // To hold the fetched letters
+const loading = ref(false)
+const error = ref(null)
+const router = useRouter()
 
-    function formatDate(dateString) {
-      const date = parseISO(dateString) // Parse the ISO string into a Date object
-      return formatDistanceToNow(date, { addSuffix: true }) // Get the relative time, e.g., "2 days ago"
+function formatDate(dateString) {
+  const date = parseISO(dateString) // Parse the ISO string into a Date object
+  return formatDistanceToNow(date, { addSuffix: true }) // Get the relative time, e.g., "2 days ago"
+}
+
+// Fetch drafts from the database
+const fetchDrafts = async () => {
+  if (!userStore.user?.id) {
+    error.value = 'User not authenticated'
+    return
+  }
+
+  loading.value = true
+  error.value = null
+
+  try {
+    const { data, error: fetchError } = await supabase
+      .from('letters')
+      .select('*')
+      .eq('user_id', userStore.user.id)
+      .eq('status', 'draft')
+      .order('updated_at', { ascending: false })
+
+    if (fetchError) {
+      throw new Error(fetchError.message)
     }
 
-    // Fetch drafts from the database
-    const fetchDrafts = async () => {
-      if (!userStore.user?.id) {
-        error.value = 'User not authenticated'
-        return
-      }
-
-      loading.value = true
-      error.value = null
-
-      try {
-        const { data, error: fetchError } = await supabase
-          .from('letters')
-          .select('*')
-          .eq('user_id', userStore.user.id)
-          .eq('status', 'draft')
-          .order('updated_at', { ascending: false })
-
-        if (fetchError) {
-          throw new Error(fetchError.message)
-        }
-
-        letters.value = data
-      } catch (err) {
-        error.value = err.message
-        toast.error(err.message)
-      } finally {
-        loading.value = false
-      }
-    }
-
-    const openDraft = (id) => {
-      router.push({ name: 'LetterComposer', query: { draftId: id } })
-    }
-
-    // Call the fetchDrafts method when the component is mounted
-    onMounted(() => {
-      fetchDrafts()
-    })
-
-    return {
-      letters,
-      loading,
-      fetchDrafts,
-      formatDate,
-      openDraft
-    }
+    letters.value = data
+  } catch (err) {
+    error.value = err.message
+    toast.error(err.message)
+  } finally {
+    loading.value = false
   }
 }
+
+const openDraft = (id) => {
+  router.push({ name: 'LetterComposer', query: { draftId: id } })
+}
+
+// Call the fetchDrafts method when the component is mounted
+onMounted(() => {
+  fetchDrafts()
+})
 </script>
 
 <style scoped>

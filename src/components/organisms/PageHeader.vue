@@ -8,16 +8,9 @@
   </header>
 </template>
 
-<script>
+<script setup>
 import User from '@/components/molecules/User.vue'
 import NavigationDock from '@/components/molecules/NavigationDock.vue'
-
-export default {
-  components: {
-    User,
-    NavigationDock
-  }
-}
 </script>
 
 <style scoped>

@@ -21,44 +21,31 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, onMounted } from 'vue'
 import { supabase } from '@/lib/supabaseClient'
 import PageHeader from '@/components/organisms/PageHeader.vue'
 import { useRouter } from 'vue-router'
 
-export default {
-  name: 'LetterViewer',
-  components: {
-    PageHeader
-  },
-  setup() {
-    const router = useRouter()
-    const letterContent = ref(null)
-    const fetchLetter = async (id) => {
-      const { data, error } = await supabase.from('letters').select('content_json').eq('id', id).single() // Fetch a single row
-      if (error) {
-        console.error('Error fetching letter:', error.message)
-        return
-      }
-      letterContent.value = data.content_json // Editor.js content is stored as JSON
-    }
-
-    onMounted(() => {
-      const id = window.location.pathname.split('/letter/')[1] // Extract the `id` from URL
-      fetchLetter(id)
-    })
-
-    function openDiscourses() {
-      const letterComposerPath = router.resolve({ name: 'LetterComposer' }).href
-      window.open(letterComposerPath, '_blank') // push user to letterComposer in a new tab...
-    }
-
-    return {
-      letterContent,
-      openDiscourses
-    }
+const router = useRouter()
+const letterContent = ref(null)
+const fetchLetter = async (id) => {
+  const { data, error } = await supabase.from('letters').select('content_json').eq('id', id).single() // Fetch a single row
+  if (error) {
+    console.error('Error fetching letter:', error.message)
+    return
   }
+  letterContent.value = data.content_json // Editor.js content is stored as JSON
+}
+
+onMounted(() => {
+  const id = window.location.pathname.split('/letter/')[1] // Extract the `id` from URL
+  fetchLetter(id)
+})
+
+function openDiscourses() {
+  const letterComposerPath = router.resolve({ name: 'LetterComposer' }).href
+  window.open(letterComposerPath, '_blank') // push user to letterComposer in a new tab...
 }
 </script>
 

@@ -1,0 +1,64 @@
+.link {
+  color: var(--link);
+  width: fit-content;
+}
+
+/* styling for lucide icons... */
+.icon {
+  width: 16px;
+  height: 16px;
+}
+
+.medium {
+  font-weight: var(--medium);
+}
+
+:disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+.clip-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tile {
+  border: var(--border);
+  border-radius: var(--radius);
+}
+
+.letter {
+  border: 1px solid var(--stroke);
+  border-radius: var(--radius);
+  max-width: 100vw;
+  height: 100%;
+  margin: 0 auto;
+  padding: var(--xs-spacing);
+  background-color: var(--background1);
+  overflow: auto;
+  box-shadow: 0 2px var(--s-spacing) var(--background2);
+  max-width: 55em;
+  padding-top: 5em;
+}
+
+.letter-container {
+  padding: var(--m-spacing);
+  height: 100%;
+  flex: 1;
+}
+
+@media only screen and (max-width: 992px) {
+  .letter-container {
+    padding: var(--xs-spacing);
+    margin-bottom: 5em;
+  }
+  .letter {
+    padding-top: var(--xs-spacing);
+  }
+}

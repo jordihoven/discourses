@@ -3,13 +3,13 @@
     <nav>
       <div class="nav-item">
         <router-link active-class="active" to="/">
-          <LucidePencil class="icon" />
+          <LucideFeather class="icon" />
           Composer</router-link
         >
       </div>
       <div class="nav-item">
         <router-link active-class="active" to="/drafts">
-          <LucideMailbox class="icon" />
+          <LucideArchive class="icon" />
           Drafts
         </router-link>
       </div>
@@ -18,19 +18,11 @@
 </template>
 <!-- fixme: might need router here, could be that it breaks if the page we're routing away from does not have a router instance... -->
 
-<script>
-export default {
-  name: 'NavigationDock',
-  setup() {
-    return {}
-  }
-}
-</script>
+<script setup></script>
 
 <style scoped>
 nav {
   display: flex;
-  gap: var(--xs-spacing);
   border-radius: 50px;
   border: var(--border);
   padding: 2px;
@@ -46,7 +38,8 @@ nav {
   gap: 4px;
 }
 
-.active {
+.nav-item .active {
   background-color: var(--background2);
+  color: var(--text1);
 }
 </style>

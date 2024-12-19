@@ -13,50 +13,37 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { supabase } from '@/lib/supabaseClient'
 import { useRouter } from 'vue-router'
 import { toast } from 'toaster-ts'
 
-export default {
-  name: 'UserComponent',
-  setup() {
-    const userStore = useUserStore()
-    const router = useRouter()
+const userStore = useUserStore()
+const router = useRouter()
 
-    const isDropdownVisible = ref(false)
-    function toggleDropdown() {
-      isDropdownVisible.value = !isDropdownVisible.value
-    }
+const isDropdownVisible = ref(false)
 
-    const formatUsername = (email) => {
-      return email ? email.split('@')[0].slice(0, 2).toUpperCase() : '??'
-    }
+function toggleDropdown() {
+  isDropdownVisible.value = !isDropdownVisible.value
+}
 
-    function createAccount() {
-      router.push({ name: 'Login' })
-    }
+const formatUsername = (email) => {
+  return email ? email.split('@')[0].slice(0, 2).toUpperCase() : '??'
+}
 
-    async function signOut() {
-      const { error } = await supabase.auth.signOut()
-      if (error) {
-        console.error('Error signing out:', error.message)
-      } else {
-        toast.success('Logged out 👋🏻')
-        router.push({ name: 'Login' })
-      }
-    }
+function createAccount() {
+  router.push({ name: 'Login' })
+}
 
-    return {
-      userStore,
-      signOut,
-      isDropdownVisible,
-      toggleDropdown,
-      formatUsername,
-      createAccount
-    }
+async function signOut() {
+  const { error } = await supabase.auth.signOut()
+  if (error) {
+    console.error('Error signing out:', error.message)
+  } else {
+    toast.success('Ciao for now 👋🏻')
+    router.push({ name: 'Login' })
   }
 }
 </script>

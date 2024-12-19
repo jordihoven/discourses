@@ -1,0 +1,60 @@
+/* toaster-ts overrides */
+#app #toaster-wrapper .toast {
+  border-radius: var(--radius);
+  background-color: var(--background1);
+  border-color: var(--stroke);
+  color: var(--text1);
+  box-shadow: none;
+}
+
+/* editor.js overrides */
+.ce-block--selected .ce-block__content {
+  background-color: var(--stroke);
+  border-radius: var(--radius);
+}
+
+.ce-block__content {
+  padding: 0 var(--xs-spacing);
+}
+
+.codex-editor__redactor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--xs-spacing);
+}
+
+.codex-editor {
+  height: 0;
+}
+
+.ce-popover__container {
+  background-color: var(--background2);
+  color: var(--text1);
+  border: var(--border) !important;
+}
+
+.cdx-search-field {
+  display: none;
+  background-color: var(--background1);
+}
+
+.ce-popover-item-separator__line {
+  background: var(--stroke);
+}
+
+.ce-popover-item {
+  color: var(--text2);
+}
+.ce-popover-item:hover {
+  background-color: var(--stroke) !important;
+}
+
+.ce-toolbar__settings-btn,
+.ce-toolbar__plus {
+  background-color: var(--stroke);
+}
+
+.ce-toolbar__settings-btn:hover,
+.ce-toolbar__plus:hover {
+  background-color: var(--background2);
+}

@@ -15,88 +15,73 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref, onMounted, nextTick } from 'vue'
 import { supabase } from '@/lib/supabaseClient'
 import { toast } from 'toaster-ts'
 import { useRouter } from 'vue-router'
 
-export default {
-  setup() {
-    const email = ref('')
-    const code = ref('')
-    const error = ref('')
-    const step = ref('email')
-    const router = useRouter()
+const email = ref('')
+const code = ref('')
+const error = ref('')
+const step = ref('email')
+const router = useRouter()
 
-    const emailInput = ref(null)
-    const codeInput = ref(null)
+const emailInput = ref(null)
+const codeInput = ref(null)
 
-    // Autofocus on the email input field when the component mounts
-    onMounted(() => {
-      if (emailInput.value) {
-        emailInput.value.focus()
-      }
+// Autofocus on the email input field when the component mounts
+onMounted(() => {
+  if (emailInput.value) {
+    emailInput.value.focus()
+  }
+})
+
+// Send the code to the user's email
+const sendCode = async () => {
+  try {
+    const { error: sendError } = await supabase.auth.signInWithOtp({
+      email: email.value
     })
 
-    // Send the code to the user's email
-    const sendCode = async () => {
-      try {
-        const { error: sendError } = await supabase.auth.signInWithOtp({
-          email: email.value
-        })
-
-        if (sendError) {
-          error.value = sendError.message
-          toast.error(error.value)
-        } else {
-          step.value = 'code' // Move to the code entry step
-          error.value = '' // Clear any previous errors
-          toast.success(`Code sent to ${email.value} ✨`)
-          await nextTick() // Wait for DOM update
-          if (codeInput.value) {
-            codeInput.value.focus() // Autofocus on the code input field
-          }
-        }
-      } catch (err) {
-        error.value = 'Something went wrong. Please try again 💀'
-        toast.error(error.value)
+    if (sendError) {
+      error.value = sendError.message
+      toast.error(error.value)
+    } else {
+      step.value = 'code' // Move to the code entry step
+      error.value = '' // Clear any previous errors
+      toast.success(`Code sent to ${email.value} ✨`)
+      await nextTick() // Wait for DOM update
+      if (codeInput.value) {
+        codeInput.value.focus() // Autofocus on the code input field
       }
     }
+  } catch (err) {
+    error.value = 'Something went wrong. Please try again 💀'
+    toast.error(error.value)
+  }
+}
 
-    // Verify the code entered by the user
-    const verifyCode = async () => {
-      try {
-        const { error: verifyError } = await supabase.auth.verifyOtp({
-          email: email.value,
-          token: code.value,
-          type: 'email'
-        })
+// Verify the code entered by the user
+const verifyCode = async () => {
+  try {
+    const { error: verifyError } = await supabase.auth.verifyOtp({
+      email: email.value,
+      token: code.value,
+      type: 'email'
+    })
 
-        if (verifyError) {
-          error.value = verifyError.message
-          toast.error(error.value)
-        } else {
-          error.value = '' // Clear any previous errors
-          toast.success('You are now logged in 🎉')
-          router.push({ name: 'LetterComposer' })
-        }
-      } catch (err) {
-        error.value = 'Something went wrong during verification 💀'
-        toast.error(error.value)
-      }
+    if (verifyError) {
+      error.value = verifyError.message
+      toast.error(error.value)
+    } else {
+      error.value = '' // Clear any previous errors
+      toast.success('You are now logged in 🎉')
+      router.push({ name: 'LetterComposer' })
     }
-
-    return {
-      email,
-      code,
-      sendCode,
-      verifyCode,
-      error,
-      step,
-      emailInput,
-      codeInput
-    }
+  } catch (err) {
+    error.value = 'Something went wrong during verification 💀'
+    toast.error(error.value)
   }
 }
 </script>
