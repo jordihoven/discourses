@@ -36,6 +36,10 @@ nav {
   display: flex;
   align-items: center;
   gap: 4px;
+  transition: var(--transition);
+}
+.nav-item a:hover {
+  filter: brightness(90%);
 }
 
 .nav-item .active {

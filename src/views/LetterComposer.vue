@@ -87,7 +87,6 @@ onMounted(() => {
     tools: {
       header: Header
     },
-    placeholder: "Let's start writing...",
     autofocus: true,
     inlineToolbar: ['bold', 'italic'],
     onChange: async () => {
@@ -104,7 +103,7 @@ onMounted(() => {
   }
 })
 
-const saveDraft = async (content) => {
+async function saveDraft(content) {
   if (saving.value) return // Prevent multiple simultaneous saves
   saving.value = true
 
@@ -113,6 +112,15 @@ const saveDraft = async (content) => {
 
     if (!userId) {
       throw new Error('User not authenticated or user ID missing')
+    }
+
+    if (!content || content.blocks.length === 0) {
+      // If content is empty, delete the draft
+      if (draftId.value) {
+        await deleteDraft(draftId.value)
+        draftId.value = null
+      }
+      return
     }
 
     if (!draftId.value) {
@@ -128,16 +136,25 @@ const saveDraft = async (content) => {
     } else {
       // Update existing draft
       const { error } = await supabase.from('letters').update({ content_json: content, status: 'draft' }).eq('id', draftId.value)
-
       if (error) throw error
     }
-
     toast.success('Draft saved')
   } catch (err) {
     console.error('Error saving draft:', err.message)
     toast.error('Failed to save draft')
   } finally {
     saving.value = false
+  }
+}
+
+async function deleteDraft(id) {
+  try {
+    const { error } = await supabase.from('letters').delete().eq('id', id)
+    if (error) throw error
+    toast.success('Draft deleted')
+  } catch (err) {
+    console.error('Error deleting draft:', err.message)
+    toast.error('Failed to delete draft')
   }
 }
 
@@ -148,7 +165,7 @@ onBeforeUnmount(() => {
   }
 })
 
-const generateLetterLink = async () => {
+async function generateLetterLink() {
   if (!editorInstance) return
   try {
     isGenerating.value = true
@@ -185,7 +202,7 @@ const generateLetterLink = async () => {
   }
 }
 
-const copyLink = () => {
+function copyLink() {
   if (generatedLink.value) {
     copy(generatedLink.value)
     toast.success('Copied to clipboard! 🔗')
@@ -195,7 +212,6 @@ const copyLink = () => {
 const openModal = () => {
   showModal.value = true
 }
-
 const closeModal = () => {
   showModal.value = false
 }

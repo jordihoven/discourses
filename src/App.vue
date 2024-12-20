@@ -17,15 +17,12 @@ import { useUserStore } from '@/stores/user'
 
 const userStore = useUserStore()
 
-// Create a reactive ref for the screen size check
 const isSmallScreen = ref(false)
 
-// Function to check the screen size
 const checkScreenSize = () => {
-  isSmallScreen.value = window.innerWidth < 600 // Adjust the threshold as needed
+  isSmallScreen.value = window.innerWidth < 700
 }
 
-// Run the check when the component mounts
 onMounted(() => {
   userStore.fetchUser()
   checkScreenSize() // Check screen size on mount
@@ -38,8 +35,7 @@ onBeforeUnmount(() => {
 })
 </script>
 
-<style scoped>
-/* Styles for the 'Use a larger screen' message */
+<!-- <style scoped>
 .overlay {
   position: fixed;
   top: 0;
@@ -52,8 +48,6 @@ onBeforeUnmount(() => {
   align-items: center;
   z-index: 1000; /* Ensure it stays on top of the content */
 }
-
-/* Centered message style */
 .message {
   display: flex;
   flex-direction: column;
@@ -67,4 +61,4 @@ onBeforeUnmount(() => {
 .message span {
   color: darkgrey;
 }
-</style>
+</style> -->
