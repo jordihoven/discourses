@@ -5,8 +5,8 @@
         <button @click="openModal" :disabled="!editorContent">Sent</button>
       </template>
     </PageHeader>
-    <div class="letter-container">
-      <div ref="editor" class="letter" :class="{ disabled: generatedLink }"></div>
+    <div class="composer-container">
+      <div ref="editor" class="editorjs" :class="{ disabled: generatedLink }"></div>
     </div>
     <!-- Modal to show generated link and copy option -->
     <transition name="fade">
@@ -96,6 +96,11 @@ onMounted(() => {
       await saveDraft(content)
     }
   })
+
+  // Programmatically set focus
+  setTimeout(() => {
+    editorInstance.focus()
+  }, 500) // Small delay to allow initialization and focus
 
   // If there's a draftId, fetch and load the draft content
   if (draftId.value) {
@@ -259,9 +264,17 @@ onClickOutside(modal, closeModal)
   filter: brightness(95%);
 }
 
-.modal-active .letter-container {
+.modal-active .composer-container {
   pointer-events: none; /* Disable pointer events for the editor when the modal is visible */
 }
+
+.composer-container {
+  padding: var(--xl-spacing) var(--m-spacing);
+  height: 100%;
+  flex: 1;
+  overflow: auto;
+}
+
 .copy-letter {
   display: flex;
   gap: var(--xs-spacing);

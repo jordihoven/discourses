@@ -84,11 +84,10 @@ onMounted(() => {
 
 <style scoped>
 .drafts-container {
-  padding: var(--xs-spacing);
+  padding: var(--xl-spacing) var(--xs-spacing);
   max-width: 720px;
   margin: 0 auto;
   width: 100%;
-  margin-top: var(--m-spacing);
 }
 
 .drafts-grid {
@@ -98,10 +97,9 @@ onMounted(() => {
 }
 
 .draft {
-  background-color: var(--background1);
+  background-color: var(--background2);
   padding: var(--xs-spacing);
   border-radius: var(--radius);
-  background-color: var(--background1);
   padding: var(--xs-spacing);
   border: var(--border);
   border-radius: var(--radius);

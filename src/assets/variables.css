@@ -46,9 +46,9 @@
 /* Dark mode */
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #1a1a1a;
-    --background1: #232323;
-    --background2: #2e2e2e;
+    --background: #232323;
+    --background1: #1a1a1a;
+    --background2: #2a2a2a;
     --text1: #fcfcfc;
     --text2: #a3a3a3;
     --surface: #1e1e1e;
@@ -61,9 +61,9 @@
 /* Light mode */
 @media (prefers-color-scheme: light) {
   :root {
-    --background: #fafafa;
-    --background1: #fff;
-    --background2: #f2f2f2;
+    --background: #f2f2f2;
+    --background1: #f2f2f2;
+    --background2: #fafafa;
     --text1: #171717;
     --text2: #525252;
     --surface: #f2f2f2;

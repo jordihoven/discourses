@@ -19,7 +19,6 @@ import NavigationDock from '@/components/molecules/NavigationDock.vue'
   justify-content: space-between;
   align-items: center;
   gap: var(--xs-spacing);
-  border-bottom: var(--border);
   padding: var(--xs-spacing);
 }
 

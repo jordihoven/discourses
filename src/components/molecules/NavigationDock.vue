@@ -44,6 +44,6 @@ nav {
 
 .nav-item .active {
   background-color: var(--background2);
-  color: var(--text1);
+  color: var(--text2);
 }
 </style>

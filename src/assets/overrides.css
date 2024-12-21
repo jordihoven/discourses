@@ -1,7 +1,7 @@
 /* toaster-ts overrides */
 #app #toaster-wrapper .toast {
   border-radius: var(--radius);
-  background-color: var(--background1);
+  background-color: var(--background2);
   border-color: var(--stroke);
   color: var(--text1);
   box-shadow: none;
@@ -15,6 +15,11 @@
 
 .ce-block__content {
   padding: 0 var(--xs-spacing);
+}
+
+.ce-toolbar__plus {
+  color: var(--text2);
+  border-color: var(--stroke);
 }
 
 .codex-editor__redactor {
