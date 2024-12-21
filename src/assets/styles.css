@@ -40,7 +40,7 @@
   height: 100%;
   margin: 0 auto;
   padding: var(--xs-spacing);
-  background-color: var(--background1);
+  background-color: var(--background2);
   overflow: auto;
   box-shadow: 0 2px var(--s-spacing) var(--background2);
   max-width: 55em;

@@ -1,24 +1,24 @@
 <template>
   <div>
     <nav>
-      <div class="nav-item">
-        <router-link active-class="active" to="/">
-          <LucideFeather class="icon" />
-          Composer</router-link
-        >
-      </div>
-      <div class="nav-item">
-        <router-link active-class="active" to="/drafts">
-          <LucideArchive class="icon" />
-          Drafts
+      <div v-for="item in navItems" :key="item.to" class="nav-item">
+        <router-link :to="item.to" active-class="active">
+          <component :is="item.icon" class="icon" />
+          {{ item.label }}
         </router-link>
       </div>
     </nav>
   </div>
 </template>
-<!-- fixme: might need router here, could be that it breaks if the page we're routing away from does not have a router instance... -->
 
-<script setup></script>
+<script setup>
+import { LucideFeather, LucideMailbox } from 'lucide-vue-next'
+
+const navItems = [
+  { to: '/', label: 'Composer', icon: LucideFeather },
+  { to: '/mailbox', label: 'Mailbox', icon: LucideMailbox }
+]
+</script>
 
 <style scoped>
 nav {
@@ -37,13 +37,11 @@ nav {
   align-items: center;
   gap: 4px;
   transition: var(--transition);
-}
-.nav-item a:hover {
-  filter: brightness(90%);
+  background-color: transparent;
 }
 
 .nav-item .active {
-  background-color: var(--background2);
+  background-color: var(--stroke);
   color: var(--text2);
 }
 </style>

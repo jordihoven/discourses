@@ -88,6 +88,7 @@ onMounted(() => {
       header: Header
     },
     autofocus: true,
+    placeholder: 'Type here...',
     inlineToolbar: ['bold', 'italic'],
     onChange: async () => {
       // Update the reactive property with editor content
@@ -96,11 +97,6 @@ onMounted(() => {
       await saveDraft(content)
     }
   })
-
-  // Programmatically set focus
-  setTimeout(() => {
-    editorInstance.focus()
-  }, 500) // Small delay to allow initialization and focus
 
   // If there's a draftId, fetch and load the draft content
   if (draftId.value) {
@@ -239,7 +235,7 @@ onClickOutside(modal, closeModal)
 }
 
 .modal-content {
-  background-color: var(--background1);
+  background-color: var(--background2);
   padding: var(--xs-spacing);
   border-radius: var(--radius);
   border: var(--border);

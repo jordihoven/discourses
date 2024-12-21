@@ -57,15 +57,13 @@ function openDiscourses() {
 }
 .letter .block {
   margin-bottom: 1em;
-  border: 1px solid transparent;
   border-radius: var(--radius);
   transition: var(--transition);
   padding: var(--xs-spacing);
 }
 
 .letter .block:hover {
-  background-color: var(--background2);
-  border: var(--border);
+  background-color: var(--background);
   cursor: pointer;
 }
 

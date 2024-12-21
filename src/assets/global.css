@@ -12,11 +12,6 @@ html,
   background-color: var(--background);
 }
 
-/* possible needed for iOS. Who knows... 💀 */
-body {
-  padding: env(safe-area-inset-top, 16px), env(safe-area-inset-bottom, 40px);
-}
-
 /* global styles */
 main {
   overflow: auto;

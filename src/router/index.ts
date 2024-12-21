@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Composer from '@/views/LetterComposer.vue'
 import Reader from '@/views/LetterViewer.vue'
-import Drafts from '@/views/LetterDrafts.vue'
+import Mailbox from '@/views/LetterMailbox.vue'
 import Login from '@/views/UserLogin.vue'
 import { supabase } from '@/lib/supabaseClient'
 
@@ -27,9 +27,9 @@ const router = createRouter({
       component: Login
     },
     {
-      path: '/drafts',
-      name: 'Drafs',
-      component: Drafts,
+      path: '/mailbox',
+      name: 'Mailbox',
+      component: Mailbox,
       meta: { requiresAuth: true }
     }
   ]

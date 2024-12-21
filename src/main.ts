@@ -24,8 +24,7 @@ import {
   LogOut,
   Pencil,
   Loader,
-  Feather,
-  Archive
+  Feather
 } from 'lucide-vue-next'
 
 // icons to use in the app...
@@ -42,7 +41,6 @@ app.component('LucideLink', Link)
 app.component('LucideLogOut', LogOut)
 app.component('LucidePencil', Pencil)
 app.component('LucideLoader', Loader)
-app.component('LucideArchive', Archive)
 app.component('LucideFeather', Feather)
 
 app.use(createPinia())
