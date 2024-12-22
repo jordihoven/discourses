@@ -13,11 +13,20 @@ export const useUserStore = defineStore('user', {
         error
       } = await supabase.auth.getUser()
       if (error) {
-        console.error('Error fetching user:', error.message)
+        console.warn('No authenticated user found:', error.message)
         this.user = null
-      } else {
-        this.user = user
+        return
       }
+      this.user = user
+    },
+    initializeAuthListener() {
+      supabase.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_IN') {
+          this.user = session.user // Update user state when signed in
+        } else if (event === 'SIGNED_OUT') {
+          this.user = null // Clear user state when signed out
+        }
+      })
     },
     setUser(user) {
       this.user = user

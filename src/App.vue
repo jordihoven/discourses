@@ -23,13 +23,13 @@ const checkScreenSize = () => {
   isSmallScreen.value = window.innerWidth < 700
 }
 
-onMounted(() => {
-  userStore.fetchUser()
-  checkScreenSize() // Check screen size on mount
-  window.addEventListener('resize', checkScreenSize) // Add resize event listener
+onMounted(async () => {
+  userStore.initializeAuthListener()
+  await userStore.fetchUser()
+  checkScreenSize()
+  window.addEventListener('resize', checkScreenSize)
 })
 
-// Clean up event listener when the component is unmounted
 onBeforeUnmount(() => {
   window.removeEventListener('resize', checkScreenSize)
 })

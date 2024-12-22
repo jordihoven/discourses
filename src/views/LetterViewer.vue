@@ -2,7 +2,7 @@
   <div class="letterviewer">
     <PageHeader>
       <template #actions>
-        <div class="written-in"><span>Written in</span> <button @click="openDiscourses">📜 Discourses</button></div>
+        <div class="written-in"><button @click="openDiscourses">📜 Discourses</button></div>
       </template>
     </PageHeader>
 

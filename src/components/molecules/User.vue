@@ -8,7 +8,7 @@
       </button>
     </div>
     <div class="signup" v-else>
-      <button @click="createAccount">Create account</button>
+      <button @click="createAccount">Sign up</button>
     </div>
   </div>
 </template>
