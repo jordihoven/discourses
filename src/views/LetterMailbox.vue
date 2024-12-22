@@ -35,7 +35,7 @@
                     <p v-html="block.data?.text || 'No content'"></p>
                   </div>
                 </div>
-                <button class="copy-button" @click="copySharedLink(letter.id)">Copy</button>
+                <button class="copy-button" @click="copySharedLink(letter.id)"><LucideLink class="icon" />Copy link</button>
               </div>
             </div>
           </section>
@@ -75,7 +75,7 @@ const copySharedLink = (id) => {
   const link = `${window.location.origin}/letter/${id}`
   copy(link)
     .then(() => {
-      toast.success('Link copied to clipboard!')
+      toast('Link copied to clipboard')
     })
     .catch(() => {
       toast.error('Failed to copy the link.')
@@ -103,6 +103,7 @@ const fetchLetters = async () => {
     const { data: sharedData, error: fetchSharedError } = await supabase
       .from('letters')
       .select('*')
+      .eq('user_id', userStore.user.id)
       .eq('status', 'sent')
       .order('updated_at', { ascending: false })
 

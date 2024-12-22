@@ -17,19 +17,10 @@
   padding: 0 var(--xs-spacing);
 }
 
-.ce-toolbar__plus {
-  color: var(--text2);
-  border-color: var(--stroke);
-}
-
 .codex-editor__redactor {
   display: flex;
   flex-direction: column;
   gap: var(--xs-spacing);
-}
-
-.codex-editor {
-  height: 0;
 }
 
 .ce-popover__container {
@@ -56,9 +47,11 @@
 
 .ce-toolbar__settings-btn,
 .ce-toolbar__plus {
+  border-color: var(--stroke);
   background-color: var(--stroke);
+  color: var(--text2);
+  transition: var(--transition);
 }
-
 .ce-toolbar__settings-btn:hover,
 .ce-toolbar__plus:hover {
   background-color: var(--background2);
