@@ -12,11 +12,11 @@
 </template>
 
 <script setup>
-import { LucideFeather, LucideMailbox } from 'lucide-vue-next'
+import { LucideFeather, LucideMessageCircle } from 'lucide-vue-next'
 
 const navItems = [
   { to: '/', label: 'Composer', icon: LucideFeather },
-  { to: '/mailbox', label: 'Mailbox', icon: LucideMailbox }
+  { to: '/thoughts', label: 'Thoughts', icon: LucideMessageCircle }
 ]
 </script>
 

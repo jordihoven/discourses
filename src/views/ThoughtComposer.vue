@@ -2,7 +2,7 @@
   <div :class="{ 'modal-active': showModal }" class="lettercomposer">
     <PageHeader>
       <template #actions>
-        <button @click="openModal" :disabled="!editorContent">Sent</button>
+        <button @click="openModal" :disabled="!editorContent">Share</button>
       </template>
     </PageHeader>
     <div class="composer-container">
@@ -51,6 +51,15 @@ const props = defineProps({
   }
 })
 
+// Add debounce utility
+function debounce(func, wait) {
+  let timeout
+  return (...args) => {
+    clearTimeout(timeout)
+    timeout = setTimeout(() => func(...args), wait)
+  }
+}
+
 const editor = ref(null)
 let editorInstance = null
 const editorContent = ref(null)
@@ -94,7 +103,7 @@ onMounted(() => {
       // Update the reactive property with editor content
       const content = await editorInstance.save()
       editorContent.value = content.blocks.length > 0 ? content : null
-      await saveDraft(content)
+      await debouncedSaveDraft(content)
     }
   })
 
@@ -147,6 +156,8 @@ async function saveDraft(content) {
     saving.value = false
   }
 }
+
+const debouncedSaveDraft = debounce(saveDraft, 1200)
 
 async function deleteDraft(id) {
   try {

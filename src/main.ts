@@ -18,7 +18,6 @@ import {
   Star,
   Search,
   RemoveFormatting,
-  Mailbox,
   Copy,
   Link,
   LogOut,
@@ -35,7 +34,6 @@ app.component('LucideClapperboard', Clapperboard)
 app.component('LucideStar', Star)
 app.component('LucideSearch', Search)
 app.component('LucideRemoveFormatting', RemoveFormatting)
-app.component('LucideMailbox', Mailbox)
 app.component('LucideCopy', Copy)
 app.component('LucideLink', Link)
 app.component('LucideLogOut', LogOut)

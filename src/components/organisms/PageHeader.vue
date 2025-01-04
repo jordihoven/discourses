@@ -9,7 +9,7 @@
 </template>
 
 <script setup>
-import User from '@/components/molecules/User.vue'
+import User from '@/components/molecules/UserProfile.vue'
 import NavigationDock from '@/components/molecules/NavigationDock.vue'
 </script>
 

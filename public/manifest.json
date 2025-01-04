@@ -1,0 +1,14 @@
+{
+  "short_name": "Discourses",
+  "name": "Discourses",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#fafafa",
+  "icons": [
+    {
+      "src": "/public/favicon.png",
+      "sizes": "120x120",
+      "type": "image/png"
+    }
+  ]
+}
