@@ -8,6 +8,20 @@
 }
 
 /* editor.js overrides */
+
+/* paragraph styling */
+.ce-paragraph {
+  font-family: 'LoRa', serif;
+  font-size: 1.3rem;
+  font-weight: 500;
+  color: var(--text1);
+}
+
+.ce-header {
+  font-size: 1.5rem;
+  color: var(--text1);
+}
+
 .ce-block--selected .ce-block__content {
   background-color: var(--stroke);
   border-radius: var(--radius);
@@ -38,10 +52,12 @@
   background: var(--stroke);
 }
 
-.ce-popover-item {
+.ce-popover-item,
+.ce-inline-tool {
   color: var(--text2);
 }
-.ce-popover-item:hover {
+.ce-popover-item:hover,
+.ce-inline-tool:hover {
   background-color: var(--stroke) !important;
 }
 

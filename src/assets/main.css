@@ -4,9 +4,12 @@
 @import './overrides.css';
 
 * {
-  font-family: 'Inter', sans-serif;
   box-sizing: border-box;
   border-color: var(--stroke);
   scrollbar-width: thin;
   scrollbar-color: var(--scrollbar) transparent;
+}
+
+html {
+  font-family: 'Inter', sans-serif;
 }
