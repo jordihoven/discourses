@@ -16,15 +16,15 @@
     "@editorjs/editorjs": "^2.30.7",
     "@editorjs/header": "^2.8.8",
     "@supabase/supabase-js": "^2.46.2",
-    "@vueuse/core": "^11.1.0",
+    "@vueuse/core": "^12.4.0",
     "axios": "^1.7.5",
     "date-fns": "^4.1.0",
     "lucide-vue-next": "^0.436.0",
     "node-fetch": "^3.3.2",
-    "pinia": "^2.1.7",
+    "pinia": "^2.3.0",
     "toaster-ts": "^0.3.1",
-    "vue": "^3.4.29",
-    "vue-router": "^4.3.3"
+    "vue": "^3.5.13",
+    "vue-router": "^4.5.0"
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.8.0",
