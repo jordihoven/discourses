@@ -104,14 +104,57 @@ onMounted(() => {
       const content = await editorInstance.save()
       editorContent.value = content.blocks.length > 0 ? content : null
       await debouncedSaveDraft(content)
-    }
+    },
+    onFocus: () => handleActiveBlockFocus() // Handle focus event
   })
 
   // If there's a draftId, fetch and load the draft content
   if (draftId.value) {
     fetchDraft(draftId.value)
   }
+
+  document.addEventListener('selectionchange', handleActiveBlockFocus)
 })
+
+onBeforeUnmount(() => {
+  if (editorInstance) {
+    editorInstance.destroy()
+  }
+  document.removeEventListener('selectionchange', handleActiveBlockFocus)
+})
+
+function handleActiveBlockFocus() {
+  const currentIndex = editorInstance.blocks.getCurrentBlockIndex()
+  if (currentIndex !== -1) {
+    // All blocks in the editor
+    const allBlocks = document.querySelectorAll('.ce-block')
+    allBlocks.forEach((block) => block.classList.remove('focussed'))
+
+    // Find the active block by data-index or position
+    const activeBlock = allBlocks[currentIndex]
+    if (activeBlock) {
+      activeBlock.classList.add('focussed')
+
+      // Center the block in the container
+      centerBlockInViewport(activeBlock)
+    }
+  }
+}
+
+function centerBlockInViewport(block) {
+  const container = document.querySelector('.composer-container') // The scrollable container
+  const containerRect = container.getBoundingClientRect()
+  const blockRect = block.getBoundingClientRect()
+
+  // Calculate the offset to center the block
+  const offset = blockRect.top - containerRect.top + container.scrollTop - containerRect.height / 2 + blockRect.height / 2
+
+  // Scroll the container smoothly
+  container.scrollTo({
+    top: offset,
+    behavior: 'smooth'
+  })
+}
 
 async function saveDraft(content) {
   if (saving.value) return // Prevent multiple simultaneous saves
@@ -169,13 +212,6 @@ async function deleteDraft(id) {
     toast.error('Failed to delete draft')
   }
 }
-
-onBeforeUnmount(() => {
-  if (editorInstance) {
-    // Destroy the editor instance when the component is destroyed
-    editorInstance.destroy()
-  }
-})
 
 async function generateLetterLink() {
   if (!editorInstance) return
