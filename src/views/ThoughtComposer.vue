@@ -90,7 +90,6 @@ const fetchDraft = async (draftId) => {
 }
 
 onMounted(() => {
-  // Initialize Editor.js
   editorInstance = new EditorJS({
     holder: editor.value,
     tools: {
@@ -100,7 +99,6 @@ onMounted(() => {
     placeholder: 'Type here...',
     inlineToolbar: ['bold', 'italic'],
     onChange: async () => {
-      // Update the reactive property with editor content
       const content = await editorInstance.save()
       editorContent.value = content.blocks.length > 0 ? content : null
       await debouncedSaveDraft(content)
@@ -276,7 +274,7 @@ onClickOutside(modal, closeModal)
 }
 
 .composer-container {
-  padding: var(--xl-spacing) var(--m-spacing);
+  padding: var(--xl-spacing) var(--m-spacing) var(--huge-spacing) var(--m-spacing);
   height: 100%;
   flex: 1;
   overflow: auto;
