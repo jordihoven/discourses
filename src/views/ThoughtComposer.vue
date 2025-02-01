@@ -286,7 +286,8 @@ onClickOutside(modal, closeModal)
 .lettercomposer {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100dvh;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .modal {
@@ -331,6 +332,13 @@ onClickOutside(modal, closeModal)
   height: 100%;
   flex: 1;
   overflow: auto;
+  background-color: var(--background2);
+  border: var(--border);
+  border-radius: var(--radius);
+  margin-left: var(--xs-spacing);
+  margin-right: var(--xs-spacing);
+  margin-bottom: var(--xs-spacing);
+  margin-top: calc(var(--xs-spacing) + 48px);
 }
 
 .copy-letter {

@@ -10,6 +10,7 @@
   --lightgrey: #888;
   --danger: #ef4444;
   --button-color-primary: #fff;
+
   /* typography */
   --heading: 2rem;
   --subheading: 1.25rem;
@@ -32,7 +33,7 @@
   --m-max: 48rem;
   --l-max: 80rem;
   /* others */
-  --radius: 6px;
+  --radius: 12px;
   --transition: all 0.3s ease-in-out;
   --border: 1px solid var(--stroke);
   --box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.5);

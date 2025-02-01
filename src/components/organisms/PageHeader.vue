@@ -22,7 +22,6 @@ import NavigationDock from '@/components/molecules/NavigationDock.vue'
   left: 0;
   right: 0;
   z-index: 1000;
-  background-color: var(--background);
 }
 
 .page-header {
@@ -31,7 +30,7 @@ import NavigationDock from '@/components/molecules/NavigationDock.vue'
   align-items: center;
   gap: var(--xs-spacing);
   padding: var(--xs-spacing);
-  border-bottom: var(--border);
+  /* border-bottom: var(--border); */
 }
 
 .header-user {
