@@ -5,9 +5,9 @@
         <button @click="openModal" :disabled="!editorContent">Share</button>
       </template>
     </PageHeader>
-    <div class="composer-container">
+    <main class="composer-container">
       <div ref="editor" class="editorjs" :class="{ disabled: generatedLink }"></div>
-    </div>
+    </main>
     <!-- Modal to show generated link and copy option -->
     <transition name="fade">
       <div v-if="showModal" ref="modal" class="modal">
@@ -155,6 +155,11 @@ function updateActiveBlockBySelection() {
       const blockIndex = editorInstance.blocks.getBlockIndex(blockId)
       console.log('Active block index from selection:', blockIndex)
       updateBlockOpacity(blockIndex)
+      // Scroll active block into view
+      activeBlock.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center' // or "nearest" if you prefer minimal scrolling
+      })
     }
   }
 }

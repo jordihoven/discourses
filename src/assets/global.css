@@ -20,6 +20,7 @@ html,
 /* global styles */
 main {
   overflow: auto;
+  margin-top: 48px; /* page header */
 }
 
 h1 {

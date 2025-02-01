@@ -1,11 +1,13 @@
 <template>
-  <header class="page-header">
-    <User class="header-user" />
-    <NavigationDock class="header-nav" />
-    <div class="header-actions">
-      <slot name="actions"></slot>
-    </div>
-  </header>
+  <div class="header-wrapper">
+    <header class="page-header">
+      <User class="header-user" />
+      <NavigationDock class="header-nav" />
+      <div class="header-actions">
+        <slot name="actions"></slot>
+      </div>
+    </header>
+  </div>
 </template>
 
 <script setup>
@@ -14,6 +16,15 @@ import NavigationDock from '@/components/molecules/NavigationDock.vue'
 </script>
 
 <style scoped>
+.header-wrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  background-color: var(--background);
+}
+
 .page-header {
   display: flex;
   justify-content: space-between;
