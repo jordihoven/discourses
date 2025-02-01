@@ -96,7 +96,7 @@ onMounted(() => {
       header: Header
     },
     autofocus: true,
-    placeholder: 'Type here...',
+    placeholder: "What's on your mind?...",
     inlineToolbar: ['bold', 'italic'],
     onChange: async () => {
       const content = await editorInstance.save()
@@ -105,11 +105,59 @@ onMounted(() => {
     }
   })
 
+  // Listen for click events on the editor container
+  editor.value.addEventListener('click', (event) => {
+    const activeBlock = event.target.closest('.ce-block')
+    if (activeBlock) {
+      console.log('Active block element:', activeBlock)
+      const blockId = activeBlock.getAttribute('data-id')
+      if (blockId) {
+        const blockIndex = editorInstance.blocks.getBlockIndex(blockId)
+        console.log('Active block index:', blockIndex)
+        updateBlockOpacity(blockIndex)
+      }
+    }
+  })
+
+  // Listen for keyup events (this covers when a new block is created via Enter or user navigates)
+  editor.value.addEventListener('keyup', () => {
+    // Use a small delay if needed so that the new block is rendered.
+    setTimeout(updateActiveBlockBySelection, 10)
+  })
+
   // If there's a draftId, fetch and load the draft content
   if (draftId.value) {
     fetchDraft(draftId.value)
   }
 })
+
+function updateBlockOpacity(activeBlockIndex) {
+  const blocks = editor.value.querySelectorAll('.ce-block')
+  blocks.forEach((block, index) => {
+    block.style.opacity = index === activeBlockIndex ? '1' : '0.5'
+  })
+}
+
+function updateActiveBlockBySelection() {
+  const selection = window.getSelection()
+  if (!selection || selection.rangeCount === 0) return
+
+  const range = selection.getRangeAt(0)
+  const focusedNode = range.startContainer
+
+  // Get the closest parent block element
+  const activeBlock =
+    focusedNode.nodeType === Node.ELEMENT_NODE ? focusedNode.closest('.ce-block') : focusedNode.parentElement.closest('.ce-block')
+
+  if (activeBlock) {
+    const blockId = activeBlock.getAttribute('data-id')
+    if (blockId) {
+      const blockIndex = editorInstance.blocks.getBlockIndex(blockId)
+      console.log('Active block index from selection:', blockIndex)
+      updateBlockOpacity(blockIndex)
+    }
+  }
+}
 
 async function saveDraft(content) {
   if (saving.value) return // Prevent multiple simultaneous saves
@@ -183,7 +231,7 @@ async function generateLetterLink() {
 
     if (draftId.value) {
       // Update the existing draft with new content and status "sent"
-      const { data, error } = await supabase.from('letters').update({ content_json: content, status: 'sent' }).eq('id', draftId.value)
+      const { error } = await supabase.from('letters').update({ content_json: content, status: 'sent' }).eq('id', draftId.value)
 
       if (error) throw error
 

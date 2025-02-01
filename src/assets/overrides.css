@@ -7,12 +7,6 @@
   box-shadow: none;
 }
 
-/* editor.js overrides */
-.ce-paragraph,
-.ce-header {
-  font-family: 'LoRa', serif;
-}
-
 .ce-paragraph {
   font-size: 1.4rem;
   font-weight: 500;
@@ -22,7 +16,6 @@
 .ce-header {
   font-size: 1.7rem;
   color: var(--text1);
-  text-align: center;
   padding: 1rem 0 !important;
 }
 
@@ -35,6 +28,10 @@
 .ce-block__content {
   max-width: 820px;
   padding: 0 var(--s-spacing);
+}
+
+.ce-block {
+  transition: opacity 0.3s ease-in-out;
 }
 
 .ce-block__content {
