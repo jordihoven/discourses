@@ -7,6 +7,10 @@
   box-shadow: none;
 }
 
+.ce-toolbar {
+  transition: all 0.3s ease;
+}
+
 .ce-paragraph {
   font-size: 1.4rem;
   font-weight: 500;
@@ -71,12 +75,18 @@
 
 .ce-toolbar__settings-btn,
 .ce-toolbar__plus {
-  border-color: var(--stroke);
-  background-color: var(--stroke);
+  background-color: transparent;
   color: var(--text2);
   transition: var(--transition);
 }
 .ce-toolbar__settings-btn:hover,
 .ce-toolbar__plus:hover {
-  background-color: var(--background2);
+  background-color: transparent;
+  color: var(--text1);
+}
+
+/* hiding editor js ui that i don't want... */
+.ce-toolbar__plus,
+.ct {
+  display: none;
 }

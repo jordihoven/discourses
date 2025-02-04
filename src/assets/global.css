@@ -71,7 +71,7 @@ button {
   border: var(--border);
   background-color: var(--background2);
   color: var(--text1);
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   font-size: var(--span);
   font-weight: var(--medium);
   height: fit-content;
@@ -85,9 +85,9 @@ button:hover {
 
 input {
   background-color: var(--background2);
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   border: var(--border);
-  padding: 4px var(--xs-spacing);
+  padding: 6px var(--xs-spacing);
   transition: var(--transition);
   font-size: var(--span);
 }

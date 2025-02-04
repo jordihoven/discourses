@@ -34,6 +34,7 @@
   --l-max: 80rem;
   /* others */
   --radius: 12px;
+  --radius-sm: 8px;
   --transition: all 0.3s ease-in-out;
   --border: 1px solid var(--stroke);
   --box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.5);
