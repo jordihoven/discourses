@@ -341,6 +341,12 @@ onClickOutside(modal, closeModal)
   margin-top: calc(var(--xs-spacing) + 48px);
 }
 
+@media only screen and (max-width: 992px) {
+  .composer-container {
+    padding: var(--m-spacing) var(--m-spacing) var(--l-spacing) var(--m-spacing);
+  }
+}
+
 .copy-letter {
   display: flex;
   gap: var(--xs-spacing);

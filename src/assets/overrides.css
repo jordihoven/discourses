@@ -5,6 +5,8 @@
   border-color: var(--stroke);
   color: var(--text1);
   box-shadow: none;
+  padding: var(--xs-spacing);
+  margin-top: var(--s-spacing);
 }
 
 .ce-toolbar {
@@ -78,6 +80,7 @@
   background-color: transparent;
   color: var(--text2);
   transition: var(--transition);
+  border: none;
 }
 .ce-toolbar__settings-btn:hover,
 .ce-toolbar__plus:hover {
