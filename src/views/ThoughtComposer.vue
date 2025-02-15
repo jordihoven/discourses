@@ -54,16 +54,6 @@ import { useUserStore } from '@/stores/user'
 import { useRouter } from 'vue-router'
 const router = useRouter()
 
-// --- (Optional) If you still want to support passing a draftId as a prop ---
-// const props = defineProps({
-//   draftId: {
-//     type: String,
-//     required: false,
-//     default: null
-//   }
-// })
-
-// --- New reactive state ---
 const showComposer = ref(false)
 const openComposer = () => {
   showComposer.value = true
@@ -73,7 +63,6 @@ const closeComposer = () => {
   router.replace({ query: {} }) // Clears the URL parameters
 }
 
-// --- Editor and related states ---
 const editor = ref(null)
 let editorInstance = null
 const editorContent = ref(null)
@@ -85,10 +74,8 @@ const modal = ref(null)
 const saving = ref(false)
 const userStore = useUserStore()
 
-// --- For loading draft via route query ---
 const route = useRoute()
 
-// --- Debounce helper ---
 function debounce(func, wait) {
   let timeout
   return (...args) => {
@@ -127,7 +114,6 @@ async function saveDraft(content) {
     if (!content || content.blocks.length === 0) {
       if (route.query.draftId) {
         await deleteDraft(route.query.draftId)
-        // Optionally: clear the draftId in the URL if deleted
       }
       return
     }
@@ -316,8 +302,6 @@ onBeforeUnmount(() => {
   width: 100%;
   padding: var(--xs-spacing);
 }
-
-/* --- Trigger view (always visible) --- */
 
 .trigger-button {
   border-radius: 8px;
