@@ -1,65 +1,79 @@
 <template>
-  <div :class="{ 'modal-active': showModal }" class="lettercomposer">
-    <PageHeader>
-      <template #actions>
-        <button @click="openModal" :disabled="!editorContent">Share</button>
-      </template>
-    </PageHeader>
-    <main class="composer-container">
-      <div ref="editor" class="editorjs" :class="{ disabled: generatedLink }"></div>
-    </main>
-    <!-- Modal to show generated link and copy option -->
-    <transition name="fade">
-      <div v-if="showModal" ref="modal" class="modal">
-        <div class="modal-content">
-          <span>Share your letter to anyone, anywhere.</span>
-          <div v-if="!generatedLink" class="copy-letter">
-            <a class="letter-link disabled" href="#">discourses.app/letter/...</a>
-            <button @click="generateLetterLink" :disabled="isGenerating">
-              <LucideLink class="icon" />
-              {{ isGenerating ? 'Generating...' : 'Create Link' }}
-            </button>
-          </div>
-          <div v-else class="copy-letter">
-            <a class="letter-link" :href="generatedLink" target="_blank">{{ generatedLink }}</a>
-            <button @click="copyLink">
-              <LucideCopy class="icon" />
-              Copy link
-            </button>
+  <div class="lettercomposer">
+    <!-- Always visible trigger button -->
+    <div class="composer-trigger">
+      <button class="trigger-button" @click="openComposer">What's on your mind?</button>
+    </div>
+
+    <!-- Expanded composer view (overlay) -->
+    <div v-if="showComposer" class="composer-wrapper">
+      <header class="composer-header">
+        <button class="close-button" @click="closeComposer">×</button>
+      </header>
+      <main class="composer-container">
+        <div ref="editor" class="editorjs" :class="{ disabled: generatedLink }"></div>
+      </main>
+      <!-- Modal to show generated link and copy option -->
+      <transition name="fade">
+        <div v-if="showModal" ref="modal" class="modal">
+          <div class="modal-content">
+            <span>Share your letter to anyone, anywhere.</span>
+            <div v-if="!generatedLink" class="copy-letter">
+              <a class="letter-link disabled" href="#"> discourses.app/letter/... </a>
+              <button @click="generateLetterLink" :disabled="isGenerating">
+                <LucideLink class="icon" />
+                {{ isGenerating ? 'Generating...' : 'Create Link' }}
+              </button>
+            </div>
+            <div v-else class="copy-letter">
+              <a class="letter-link" :href="generatedLink" target="_blank">
+                {{ generatedLink }}
+              </a>
+              <button @click="copyLink">
+                <LucideCopy class="icon" />
+                Copy link
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-    </transition>
+      </transition>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, watch, nextTick, onBeforeUnmount } from 'vue'
+import { useRoute } from 'vue-router'
 import EditorJS from '@editorjs/editorjs'
 import Header from '@editorjs/header'
 import { supabase } from '@/lib/supabaseClient'
 import { toast } from 'toaster-ts'
 import { useClipboard, onClickOutside } from '@vueuse/core'
-import PageHeader from '@/components/organisms/PageHeader.vue'
 import { useUserStore } from '@/stores/user'
 
-const props = defineProps({
-  draftId: {
-    type: String,
-    required: false,
-    default: null
-  }
-})
+import { useRouter } from 'vue-router'
+const router = useRouter()
 
-// Add debounce utility
-function debounce(func, wait) {
-  let timeout
-  return (...args) => {
-    clearTimeout(timeout)
-    timeout = setTimeout(() => func(...args), wait)
-  }
+// --- (Optional) If you still want to support passing a draftId as a prop ---
+// const props = defineProps({
+//   draftId: {
+//     type: String,
+//     required: false,
+//     default: null
+//   }
+// })
+
+// --- New reactive state ---
+const showComposer = ref(false)
+const openComposer = () => {
+  showComposer.value = true
+}
+const closeComposer = () => {
+  showComposer.value = false
+  router.replace({ query: {} }) // Clears the URL parameters
 }
 
+// --- Editor and related states ---
 const editor = ref(null)
 let editorInstance = null
 const editorContent = ref(null)
@@ -68,135 +82,67 @@ const generatedLink = ref(null)
 const isGenerating = ref(false)
 const { copy } = useClipboard()
 const modal = ref(null)
-
-const draftId = ref(props.draftId) // Use the draftId from props
 const saving = ref(false)
+const userStore = useUserStore()
 
-const userStore = useUserStore() // Access the Pinia user store
+// --- For loading draft via route query ---
+const route = useRoute()
 
-// Fetch the draft content when the component is mounted
-const fetchDraft = async (draftId) => {
+// --- Debounce helper ---
+function debounce(func, wait) {
+  let timeout
+  return (...args) => {
+    clearTimeout(timeout)
+    timeout = setTimeout(() => func(...args), wait)
+  }
+}
+const debouncedSaveDraft = debounce(saveDraft, 1200)
+
+// --- Function to load a draft by ID ---
+async function fetchDraft(draftId) {
   try {
     const { data, error } = await supabase.from('letters').select('content_json').eq('id', draftId).single()
     if (error) throw error
-    // Initialize the editor with the fetched draft content
     if (data) {
       editorContent.value = data.content_json
-      editorInstance.render(editorContent.value) // Load the content into the editor
+      // If the editor is ready, render the content
+      if (editorInstance) {
+        editorInstance.render(editorContent.value)
+      }
     }
   } catch (err) {
     toast.error('Failed to load draft: ' + err.message)
   }
 }
 
-onMounted(() => {
-  editorInstance = new EditorJS({
-    holder: editor.value,
-    tools: {
-      header: Header
-    },
-    autofocus: true,
-    placeholder: "What's on your mind?...",
-    inlineToolbar: ['bold', 'italic'],
-    onChange: async () => {
-      const content = await editorInstance.save()
-      editorContent.value = content.blocks.length > 0 ? content : null
-      await debouncedSaveDraft(content)
-    }
-  })
-
-  // Listen for click events on the editor container
-  editor.value.addEventListener('click', (event) => {
-    const activeBlock = event.target.closest('.ce-block')
-    if (activeBlock) {
-      console.log('Active block element:', activeBlock)
-      const blockId = activeBlock.getAttribute('data-id')
-      if (blockId) {
-        const blockIndex = editorInstance.blocks.getBlockIndex(blockId)
-        console.log('Active block index:', blockIndex)
-        updateBlockOpacity(blockIndex)
-      }
-    }
-  })
-
-  // Listen for keyup events (this covers when a new block is created via Enter or user navigates)
-  editor.value.addEventListener('keyup', () => {
-    // Use a small delay if needed so that the new block is rendered.
-    setTimeout(updateActiveBlockBySelection, 10)
-  })
-
-  // If there's a draftId, fetch and load the draft content
-  if (draftId.value) {
-    fetchDraft(draftId.value)
-  }
-})
-
-function updateBlockOpacity(activeBlockIndex) {
-  const blocks = editor.value.querySelectorAll('.ce-block')
-  blocks.forEach((block, index) => {
-    block.style.opacity = index === activeBlockIndex ? '1' : '0.5'
-  })
-}
-
-function updateActiveBlockBySelection() {
-  const selection = window.getSelection()
-  if (!selection || selection.rangeCount === 0) return
-
-  const range = selection.getRangeAt(0)
-  const focusedNode = range.startContainer
-
-  // Get the closest parent block element
-  const activeBlock =
-    focusedNode.nodeType === Node.ELEMENT_NODE ? focusedNode.closest('.ce-block') : focusedNode.parentElement.closest('.ce-block')
-
-  if (activeBlock) {
-    const blockId = activeBlock.getAttribute('data-id')
-    if (blockId) {
-      const blockIndex = editorInstance.blocks.getBlockIndex(blockId)
-      console.log('Active block index from selection:', blockIndex)
-      updateBlockOpacity(blockIndex)
-      // Scroll active block into view
-      activeBlock.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center' // or "nearest" if you prefer minimal scrolling
-      })
-    }
-  }
-}
-
+// --- EditorJS functions ---
 async function saveDraft(content) {
-  if (saving.value) return // Prevent multiple simultaneous saves
+  if (saving.value) return
   saving.value = true
 
   try {
     const userId = userStore.user?.id
-
-    if (!userId) {
-      throw new Error('User not authenticated or user ID missing')
-    }
+    if (!userId) throw new Error('User not authenticated or user ID missing')
 
     if (!content || content.blocks.length === 0) {
-      // If content is empty, delete the draft
-      if (draftId.value) {
-        await deleteDraft(draftId.value)
-        draftId.value = null
+      if (route.query.draftId) {
+        await deleteDraft(route.query.draftId)
+        // Optionally: clear the draftId in the URL if deleted
       }
       return
     }
 
-    if (!draftId.value) {
-      // Insert a new draft
+    if (!route.query.draftId) {
+      // Insert new draft if no draftId exists
       const { data, error } = await supabase
         .from('letters')
         .insert([{ content_json: content, user_id: userId, status: 'draft' }])
         .select()
-
       if (error) throw error
-
-      draftId.value = data[0]?.id
+      // Here, you could update the URL with the new draft id if desired.
     } else {
       // Update existing draft
-      const { error } = await supabase.from('letters').update({ content_json: content, status: 'draft' }).eq('id', draftId.value)
+      const { error } = await supabase.from('letters').update({ content_json: content, status: 'draft' }).eq('id', route.query.draftId)
       if (error) throw error
     }
     toast.success('Draft saved')
@@ -207,8 +153,6 @@ async function saveDraft(content) {
     saving.value = false
   }
 }
-
-const debouncedSaveDraft = debounce(saveDraft, 1200)
 
 async function deleteDraft(id) {
   try {
@@ -221,35 +165,24 @@ async function deleteDraft(id) {
   }
 }
 
-onBeforeUnmount(() => {
-  if (editorInstance) {
-    // Destroy the editor instance when the component is destroyed
-    editorInstance.destroy()
-  }
-})
-
 async function generateLetterLink() {
   if (!editorInstance) return
   try {
     isGenerating.value = true
     const content = await editorInstance.save()
 
-    if (draftId.value) {
-      // Update the existing draft with new content and status "sent"
-      const { error } = await supabase.from('letters').update({ content_json: content, status: 'sent' }).eq('id', draftId.value)
-
+    if (route.query.draftId) {
+      const { error } = await supabase.from('letters').update({ content_json: content, status: 'sent' }).eq('id', route.query.draftId)
       if (error) throw error
 
-      generatedLink.value = `${window.location.origin}/letter/${draftId.value}` // Use the draftId in the link
+      generatedLink.value = `${window.location.origin}/letter/${route.query.draftId}`
       toast.success('Link generated successfully! 🎉')
       showModal.value = true
     } else {
-      // Create a new row if no draft exists
       const { data, error } = await supabase
         .from('letters')
         .insert([{ content_json: content, status: 'sent' }])
         .select()
-
       if (error) throw error
 
       const letterId = data[0].id
@@ -259,7 +192,7 @@ async function generateLetterLink() {
     }
   } catch (err) {
     console.error('Error generating link: ', err.message)
-    toast.error('Something went wrong 🙊 ', err.message)
+    toast.error('Something went wrong 🙊 ' + err.message)
   } finally {
     isGenerating.value = false
   }
@@ -272,47 +205,195 @@ function copyLink() {
   }
 }
 
-const openModal = () => {
-  showModal.value = true
-}
-const closeModal = () => {
+// --- Click-outside to close modal ---
+onClickOutside(modal, () => {
   showModal.value = false
+})
+
+// --- Watch for composer visibility to initialize/destroy EditorJS ---
+watch(showComposer, (val) => {
+  if (val) {
+    // When the composer becomes visible, initialize EditorJS
+    nextTick(() => {
+      if (!editorInstance) {
+        editorInstance = new EditorJS({
+          holder: editor.value,
+          tools: { header: Header },
+          autofocus: true,
+          placeholder: "What's on your mind?...",
+          inlineToolbar: ['bold', 'italic'],
+          onChange: async () => {
+            const content = await editorInstance.save()
+            editorContent.value = content.blocks.length > 0 ? content : null
+            await debouncedSaveDraft(content)
+          }
+        })
+
+        // (Optional) Add EditorJS event listeners here...
+        editor.value.addEventListener('click', (event) => {
+          const activeBlock = event.target.closest('.ce-block')
+          if (activeBlock) {
+            const blockId = activeBlock.getAttribute('data-id')
+            if (blockId) {
+              const blockIndex = editorInstance.blocks.getBlockIndex(blockId)
+              updateBlockOpacity(blockIndex)
+            }
+          }
+        })
+        editor.value.addEventListener('keyup', () => {
+          setTimeout(updateActiveBlockBySelection, 10)
+        })
+
+        // If the route has a draftId, load that draft into EditorJS
+        if (route.query.draftId) {
+          fetchDraft(route.query.draftId)
+        }
+      }
+    })
+  } else {
+    if (editorInstance) {
+      editorInstance.destroy()
+      editorInstance = null
+    }
+  }
+})
+
+// --- Watch for changes in route query to open a draft ---
+watch(
+  () => route.query.draftId,
+  (newDraftId) => {
+    if (newDraftId) {
+      openComposer()
+      // If EditorJS is already initialized, load the draft;
+      // otherwise, fetchDraft will be called in the showComposer watcher.
+      if (editorInstance) {
+        fetchDraft(newDraftId)
+      }
+    }
+  }
+)
+
+function updateBlockOpacity(activeBlockIndex) {
+  const blocks = editor.value.querySelectorAll('.ce-block')
+  blocks.forEach((block, index) => {
+    block.style.opacity = index === activeBlockIndex ? '1' : '0.5'
+  })
 }
 
-onClickOutside(modal, closeModal)
+function updateActiveBlockBySelection() {
+  const selection = window.getSelection()
+  if (!selection || selection.rangeCount === 0) return
+  const range = selection.getRangeAt(0)
+  const focusedNode = range.startContainer
+  const activeBlock =
+    focusedNode.nodeType === Node.ELEMENT_NODE ? focusedNode.closest('.ce-block') : focusedNode.parentElement.closest('.ce-block')
+  if (activeBlock) {
+    const blockId = activeBlock.getAttribute('data-id')
+    if (blockId) {
+      const blockIndex = editorInstance.blocks.getBlockIndex(blockId)
+      updateBlockOpacity(blockIndex)
+      activeBlock.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center'
+      })
+    }
+  }
+}
+
+onBeforeUnmount(() => {
+  if (editorInstance) {
+    editorInstance.destroy()
+  }
+})
 </script>
 
 <style scoped>
+/* Container for the entire composer component */
 .lettercomposer {
-  display: flex;
-  flex-direction: column;
-  height: 100dvh;
-  padding-bottom: env(safe-area-inset-bottom);
+  position: relative;
+  max-width: calc(720px + 2 * var(--xs-spacing));
+  margin: 0 auto;
+  width: 100%;
+  padding: var(--xs-spacing);
 }
 
+/* --- Trigger view (always visible) --- */
+
+.trigger-button {
+  border-radius: 8px;
+  border: 1px solid var(--stroke);
+  padding: var(--s-spacing) var(--m-spacing);
+  font-size: 1rem;
+  background-color: var(--background);
+  color: var(--text2);
+  font-weight: var(--medium);
+  width: 100%;
+  box-shadow: 0 2px 6px var(--background2);
+}
+
+.trigger-button:hover {
+  filter: brightness(1.25);
+}
+
+/* --- Expanded composer view (overlay) --- */
+.composer-wrapper {
+  position: fixed;
+  top: var(--xl-spacing);
+  left: var(--m-spacing);
+  right: var(--m-spacing);
+  bottom: var(--m-spacing);
+  background-color: var(--background2, #fff);
+  border: var(--border, 1px solid #ddd);
+  border-radius: 12px;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+}
+
+.composer-header {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px;
+}
+
+.close-button {
+  background: transparent;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+.composer-container {
+  flex: 1;
+  overflow: auto;
+  padding: var(--m-spacing, 16px);
+  transition: all 0.3s ease-in-out;
+}
+
+/* --- Modal styles --- */
 .modal {
   position: fixed;
   top: 44px;
-  right: var(--xs-spacing);
-  z-index: 999;
+  right: var(--xs-spacing, 16px);
+  z-index: 1100;
 }
 
 .modal-content {
-  background-color: var(--background2);
-  padding: var(--xs-spacing);
-  border-radius: var(--radius);
-  border: var(--border);
+  background-color: var(--background2, #fff);
+  padding: var(--xs-spacing, 8px);
+  border-radius: var(--radius, 4px);
+  border: var(--border, 1px solid #ddd);
   display: flex;
   flex-direction: column;
-  gap: var(--xs-spacing);
+  gap: var(--xs-spacing, 8px);
 }
 
 .letter-link {
-  padding: var(--xs-spacing);
-  background-color: var(--background2);
-  border-radius: var(--radius);
-  border: var(--border);
-  transition: var(--transition);
+  padding: var(--xs-spacing, 8px);
+  background-color: var(--background2, #fff);
+  border-radius: var(--radius, 4px);
+  border: var(--border, 1px solid #ddd);
+  transition: var(--transition, 0.3s);
   flex: 1;
   width: 15em;
   overflow: hidden;
@@ -323,57 +404,13 @@ onClickOutside(modal, closeModal)
   filter: brightness(95%);
 }
 
-.modal-active .composer-container {
-  pointer-events: none; /* Disable pointer events for the editor when the modal is visible */
-}
-
-.composer-container {
-  padding: var(--xl-spacing) var(--m-spacing) var(--huge-spacing) var(--m-spacing);
-  height: 100%;
-  flex: 1;
-  overflow: auto;
-  background-color: var(--background2);
-  border: var(--border);
-  border-radius: var(--radius);
-  margin-left: var(--xs-spacing);
-  margin-right: var(--xs-spacing);
-  margin-bottom: var(--xs-spacing);
-  margin-top: calc(var(--xs-spacing) + 48px);
-}
-
-@media only screen and (max-width: 992px) {
-  .composer-container {
-    padding: var(--m-spacing) var(--m-spacing) var(--l-spacing) var(--m-spacing);
-  }
-}
-
 .copy-letter {
   display: flex;
-  gap: var(--xs-spacing);
+  gap: var(--xs-spacing, 8px);
   align-items: center;
 }
 
-.shared-notice {
-  text-align: center;
-  padding: var(--xs-spacing);
-  border: var(--border);
-  border-radius: var(--radius);
-  width: fit-content;
-  position: absolute;
-  background-color: var(--background2);
-  left: 50%;
-  transform: translateX(-50%);
-  top: 6em;
-  gap: var(--xs-spacing);
-  display: flex;
-  flex-direction: column;
-}
-.shared-notice button {
-  width: 100%;
-  justify-content: center;
-}
-
-/* Fade transition */
+/* --- Fade transition for modal --- */
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.3s ease;

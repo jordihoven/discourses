@@ -1,6 +1,5 @@
 <template>
   <div class="drafts">
-    <PageHeader></PageHeader>
     <main>
       <div class="drafts-container">
         <!-- Loader -->
@@ -9,7 +8,7 @@
         </div>
         <!-- Drafts Section -->
         <template v-else>
-          <p class="section-title">Drafts</p>
+          <p class="section-title">Recent thoughts</p>
           <section v-if="letters.drafts.length > 0">
             <div class="drafts-grid">
               <div v-for="letter in letters.drafts" :key="letter.id" class="draft" @click="openDraft(letter.id)">
@@ -170,7 +169,7 @@ onMounted(() => {
 .drafts {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  overflow: auto;
 }
 
 .loading {
@@ -199,6 +198,7 @@ onMounted(() => {
 .section-title {
   margin-bottom: var(--xs-spacing);
   font-weight: var(--medium);
+  color: var(--text2);
 }
 
 section {

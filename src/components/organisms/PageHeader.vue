@@ -2,7 +2,7 @@
   <div class="header-wrapper">
     <header class="page-header">
       <User class="header-user" />
-      <NavigationDock class="header-nav" />
+      <!-- <NavigationDock class="header-nav" /> -->
       <div class="header-actions">
         <slot name="actions"></slot>
       </div>
@@ -16,13 +16,13 @@ import NavigationDock from '@/components/molecules/NavigationDock.vue'
 </script>
 
 <style scoped>
-.header-wrapper {
+/* .header-wrapper {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   z-index: 1000;
-}
+} */
 
 .page-header {
   display: flex;
@@ -30,7 +30,7 @@ import NavigationDock from '@/components/molecules/NavigationDock.vue'
   align-items: center;
   gap: var(--xs-spacing);
   padding: var(--xs-spacing);
-  /* border-bottom: var(--border); */
+  border-bottom: var(--border);
 }
 
 .header-user {
