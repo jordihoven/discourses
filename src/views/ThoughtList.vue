@@ -18,7 +18,9 @@
                     <p v-html="block.data?.text || 'No content'"></p>
                   </div>
                 </div>
-                <span>{{ formatDate(letter.updated_at) }}</span>
+                <div class="draft-footer">
+                  <span>{{ formatDate(letter.updated_at) }}</span>
+                </div>
               </div>
             </div>
           </section>
@@ -132,8 +134,8 @@ onMounted(() => {
 
 <style scoped>
 .drafts-container {
-  padding: var(--l-spacing) var(--xs-spacing) var(--huge-spacing) var(--xs-spacing);
-  max-width: 720px;
+  padding: var(--l-spacing) var(--xs-spacing);
+  max-width: 50em;
   margin: 0 auto;
   width: 100%;
 }
@@ -155,16 +157,34 @@ onMounted(() => {
   gap: var(--xs-spacing);
   transition: var(--transition);
   box-shadow: 0 2px 6px var(--background2);
+  overflow: hidden;
 }
-.draft:hover {
+.draft:hover,
+.draft:active {
   cursor: pointer;
   filter: brightness(92%);
+  transform: translateY(1px);
 }
 
 .draft-content {
-  max-height: 10em;
+  height: 10em;
   overflow: hidden;
-  text-overflow: ellipsis;
+}
+
+.draft-footer {
+  position: relative;
+}
+
+.draft-footer::before {
+  content: '';
+  position: absolute;
+  /* hacky spacing to start the ::before on top of footer, could cause issues */
+  bottom: var(--s-spacing);
+  left: 0;
+  width: 100%;
+  height: 5em;
+  pointer-events: none;
+  background: linear-gradient(transparent, var(--background2));
 }
 
 .drafts {
@@ -199,6 +219,10 @@ onMounted(() => {
 .section-title {
   margin-bottom: var(--xs-spacing);
   font-weight: var(--medium);
+}
+
+p.section-title {
+  color: var(--text2);
 }
 
 section {

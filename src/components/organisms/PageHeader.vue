@@ -30,7 +30,7 @@ import NavigationDock from '@/components/molecules/NavigationDock.vue'
   align-items: center;
   gap: var(--xs-spacing);
   padding: var(--xs-spacing);
-  /* border-bottom: var(--border); */
+  border-bottom: var(--border);
 }
 
 .header-user {

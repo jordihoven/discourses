@@ -294,7 +294,7 @@ onClickOutside(modal, closeModal)
   position: fixed;
   top: 44px;
   right: var(--xs-spacing);
-  z-index: 999;
+  z-index: 1001;
 }
 
 .modal-content {
