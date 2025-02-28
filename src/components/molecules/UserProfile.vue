@@ -1,15 +1,28 @@
 <template>
   <div>
-    <div class="user" v-if="userStore.user" @click="toggleDropdown">
+    <div class="user" v-if="userStore.user" @click="showModal = true">
       <span class="medium"> {{ formatUsername(userStore.user?.email) }} </span>
-      <button v-if="isDropdownVisible" class="dropdown" @click="signOut">
-        Logout
-        <LucideLogOut class="icon" />
-      </button>
     </div>
     <div class="signup" v-else>
       <button @click="createAccount">Sign up</button>
     </div>
+
+    <!-- Modal -->
+    <Teleport to="body">
+      <div v-if="showModal" class="modal-overlay" @click="closeModal">
+        <div class="modal-content" @click.stop>
+          <div class="user-tile">
+            <p>{{ formatUsername(userStore.user?.email) }}</p>
+            <p>{{ userStore.user?.email }}</p>
+          </div>
+          <button class="logout-button" @click="signOut">
+            <LucideLogOut class="icon" />
+            Logout
+          </button>
+          <!-- <button class="close-button" @click="closeModal">Close</button> -->
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -23,11 +36,7 @@ import { toast } from 'toaster-ts'
 const userStore = useUserStore()
 const router = useRouter()
 
-const isDropdownVisible = ref(false)
-
-function toggleDropdown() {
-  isDropdownVisible.value = !isDropdownVisible.value
-}
+const showModal = ref(false)
 
 const formatUsername = (email) => {
   return email ? email.split('@')[0].slice(0, 2).toUpperCase() : '??'
@@ -44,7 +53,12 @@ async function signOut() {
   } else {
     toast.success('Ciao for now 👋🏻')
     router.push({ name: 'Login' })
+    showModal.value = false
   }
+}
+
+function closeModal() {
+  showModal.value = false
 }
 </script>
 
@@ -71,14 +85,43 @@ async function signOut() {
   font-size: 0.75rem;
 }
 
-/* Style for the dropdown */
-.dropdown {
-  position: absolute;
-  top: calc(100% + 4px);
+/* Modal Styles */
+.modal-overlay {
+  position: fixed;
+  top: 0;
   left: 0;
-  border: var(--border);
-  background-color: var(--background2);
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: start;
+  justify-content: center;
+  z-index: 1000;
+  padding: var(--xs-spacing);
+}
+
+.modal-content {
+  background: var(--background);
+  padding: var(--xs-spacing);
+  border: 1px solid var(--stroke);
   border-radius: var(--radius);
-  z-index: 10;
+  width: 40em;
+
+  margin-top: var(--m-spacing);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--xs-spacing);
+}
+
+.logout-button {
+  width: 100%;
+}
+
+.user-tile {
+  background-color: var(--background2);
+  padding: var(--xs-spacing);
+  border: var(--border);
+  border-radius: var(--radius);
 }
 </style>

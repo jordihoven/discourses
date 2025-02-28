@@ -135,15 +135,15 @@ onMounted(() => {
 <style scoped>
 .drafts-container {
   padding: var(--l-spacing) var(--xs-spacing);
-  max-width: 50em;
+  max-width: 55em;
   margin: 0 auto;
   width: 100%;
 }
 
 .drafts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
-  gap: var(--xs-spacing);
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: var(--sm-spacing);
 }
 
 .draft {
