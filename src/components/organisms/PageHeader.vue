@@ -5,19 +5,20 @@
       <NavigationDock class="header-nav" />
       <div class="header-actions">
         <slot name="actions"></slot>
-        <div class="actionlist-toggle" @click="toggleDropdown" ref="toggleButton">
+        <div class="actionlist-toggle" :class="{ active: isDropdownOpen }" @click="toggleDropdown" ref="toggleButton">
           <LucideEllipsis class="icon ellipsis-icon" />
         </div>
       </div>
     </header>
     <ul v-if="isDropdownOpen" id="actionlist" ref="dropdownMenu">
-      <li class="action" @click="handleAction('clear')"><LucideWind class="icon" /> Clear thought</li>
+      <!-- <li class="action" @click="handleAction('clear')"><LucideSearch class="icon" />Search</li> -->
+      <li class="action" @click="handleAction('clear')"><LucideWind class="icon" />Clear thought</li>
     </ul>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, defineEmits } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import User from '@/components/molecules/UserProfile.vue'
 import NavigationDock from '@/components/molecules/NavigationDock.vue'
@@ -25,6 +26,8 @@ import NavigationDock from '@/components/molecules/NavigationDock.vue'
 const isDropdownOpen = ref(false)
 const dropdownMenu = ref(null)
 const toggleButton = ref(null)
+
+const emit = defineEmits(['clear'])
 
 const toggleDropdown = () => {
   isDropdownOpen.value = !isDropdownOpen.value
@@ -41,6 +44,9 @@ onClickOutside(
 
 const handleAction = (action) => {
   console.log(`Action triggered: ${action}`)
+  if (action === 'clear') {
+    emit('clear')
+  }
   isDropdownOpen.value = false
 }
 </script>
@@ -61,6 +67,7 @@ const handleAction = (action) => {
   gap: var(--xs-spacing);
   padding: var(--xs-spacing);
   border-bottom: var(--border);
+  background-color: var(--background1);
 }
 
 .header-user {
@@ -88,7 +95,8 @@ const handleAction = (action) => {
   align-items: center;
 }
 
-.actionlist-toggle:hover {
+.actionlist-toggle:hover,
+.actionlist-toggle.active {
   background-color: var(--background);
   cursor: pointer;
 }

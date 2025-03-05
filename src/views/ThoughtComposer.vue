@@ -1,8 +1,8 @@
 <template>
   <div :class="{ 'modal-active': showModal }" class="lettercomposer">
-    <PageHeader>
+    <PageHeader @clear="clearEditorBlocks">
       <template #actions>
-        <button @click="openModal" :disabled="!editorContent">Share</button>
+        <button @click="openModal" ref="shareButton" :disabled="!editorContent">Share</button>
       </template>
     </PageHeader>
     <main class="composer-container">
@@ -63,7 +63,6 @@ function debounce(func, wait) {
 const editor = ref(null)
 let editorInstance = null
 const editorContent = ref(null)
-const showModal = ref(false)
 const generatedLink = ref(null)
 const isGenerating = ref(false)
 const { copy } = useClipboard()
@@ -272,6 +271,9 @@ function copyLink() {
   }
 }
 
+const shareButton = ref(null)
+const showModal = ref(false)
+
 const openModal = () => {
   showModal.value = true
 }
@@ -279,7 +281,22 @@ const closeModal = () => {
   showModal.value = false
 }
 
-onClickOutside(modal, closeModal)
+onClickOutside(
+  modal,
+  closeModal,
+  { ignore: [shareButton] } // Ignore clicks on the share button
+)
+
+// handling the emitted action event from the pageheader...
+const clearEditorBlocks = async () => {
+  console.log('ran clear blocks')
+  if (editorInstance) {
+    // Call Editor.js's clear method.
+    // Depending on your version, it might be editor.clear() or editor.blocks.clear().
+    await editorInstance.clear()
+    console.log('Editor cleared')
+  }
+}
 </script>
 
 <style scoped>
