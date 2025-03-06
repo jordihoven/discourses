@@ -1,25 +1,33 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Composer from '@/views/ThoughtComposer.vue'
+// import Composer from '@/views/ThoughtComposer.vue'
 import Reader from '@/views/ThoughtReader.vue'
 import Thoughts from '@/views/ThoughtList.vue'
 import Login from '@/views/UserLogin.vue'
 import { supabase } from '@/lib/supabaseClient'
 
+import Home from '@/views/HomeView.vue'
+
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    {
-      path: '/',
-      name: 'LetterComposer',
-      component: Composer,
-      meta: { requiresAuth: true },
-      props: (route) => ({ draftId: route.query.draftId })
-    },
+    // {
+    //   path: '/',
+    //   name: 'LetterComposer',
+    //   component: Composer,
+    //   meta: { requiresAuth: true },
+    //   props: (route) => ({ draftId: route.query.draftId })
+    // },
     {
       path: '/letter/:id',
       name: 'LetterViewer',
       component: Reader,
       props: true
+    },
+    {
+      path: '/',
+      name: 'Home',
+      component: Home,
+      meta: { requiresAuth: true }
     },
     {
       path: '/login',

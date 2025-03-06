@@ -1,10 +1,10 @@
 <template>
   <div :class="{ 'modal-active': showModal }" class="lettercomposer">
-    <PageHeader @clear="clearEditorBlocks">
+    <!-- <PageHeader @clear="clearEditorBlocks">
       <template #actions>
         <button @click="openModal" ref="shareButton" :disabled="!editorContent">Share</button>
       </template>
-    </PageHeader>
+    </PageHeader> -->
     <main class="composer-container">
       <div ref="editor" class="editorjs" :class="{ disabled: generatedLink }"></div>
     </main>
@@ -34,7 +34,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import EditorJS from '@editorjs/editorjs'
 import Header from '@editorjs/header'
 import { supabase } from '@/lib/supabaseClient'
@@ -50,6 +50,8 @@ const props = defineProps({
     default: null
   }
 })
+
+const emit = defineEmits(['update:draftId', 'thoughtChanged'])
 
 // Add debounce utility
 function debounce(func, wait) {
@@ -68,7 +70,6 @@ const isGenerating = ref(false)
 const { copy } = useClipboard()
 const modal = ref(null)
 
-const draftId = ref(props.draftId) // Use the draftId from props
 const saving = ref(false)
 
 const userStore = useUserStore() // Access the Pinia user store
@@ -87,6 +88,15 @@ const fetchDraft = async (draftId) => {
     toast.error('Failed to load draft: ' + err.message)
   }
 }
+
+watch(
+  () => props.draftId,
+  (newDraftId, oldDraftId) => {
+    if (newDraftId && newDraftId !== oldDraftId) {
+      fetchDraft(newDraftId)
+    }
+  }
+)
 
 onMounted(() => {
   editorInstance = new EditorJS({
@@ -125,8 +135,8 @@ onMounted(() => {
   })
 
   // If there's a draftId, fetch and load the draft content
-  if (draftId.value) {
-    fetchDraft(draftId.value)
+  if (props.draftId) {
+    fetchDraft(props.draftId)
   }
 })
 
@@ -176,14 +186,14 @@ async function saveDraft(content) {
 
     if (!content || content.blocks.length === 0) {
       // If content is empty, delete the draft
-      if (draftId.value) {
-        await deleteDraft(draftId.value)
-        draftId.value = null
+      if (props.draftId) {
+        await deleteDraft(props.draftId)
+        emit('update:draftId', null)
       }
       return
     }
 
-    if (!draftId.value) {
+    if (!props.draftId) {
       // Insert a new draft
       const { data, error } = await supabase
         .from('letters')
@@ -191,14 +201,14 @@ async function saveDraft(content) {
         .select()
 
       if (error) throw error
-
-      draftId.value = data[0]?.id
+      emit('update:draftId', data[0]?.id)
     } else {
       // Update existing draft
-      const { error } = await supabase.from('letters').update({ content_json: content, status: 'draft' }).eq('id', draftId.value)
+      const { error } = await supabase.from('letters').update({ content_json: content, status: 'draft' }).eq('id', props.draftId)
       if (error) throw error
     }
     toast.success('Draft saved')
+    emit('thoughtChanged') // emit event to update thoughtlist...
   } catch (err) {
     console.error('Error saving draft:', err.message)
     toast.error('Failed to save draft')
@@ -214,6 +224,7 @@ async function deleteDraft(id) {
     const { error } = await supabase.from('letters').delete().eq('id', id)
     if (error) throw error
     toast.success('Draft deleted')
+    emit('thoughtChanged') // emit event to update thoughtlist...
   } catch (err) {
     console.error('Error deleting draft:', err.message)
     toast.error('Failed to delete draft')
@@ -233,13 +244,13 @@ async function generateLetterLink() {
     isGenerating.value = true
     const content = await editorInstance.save()
 
-    if (draftId.value) {
+    if (props.draftId) {
       // Update the existing draft with new content and status "sent"
-      const { error } = await supabase.from('letters').update({ content_json: content, status: 'sent' }).eq('id', draftId.value)
+      const { error } = await supabase.from('letters').update({ content_json: content, status: 'sent' }).eq('id', props.draftId)
 
       if (error) throw error
 
-      generatedLink.value = `${window.location.origin}/letter/${draftId.value}` // Use the draftId in the link
+      generatedLink.value = `${window.location.origin}/letter/${props.draftId}` // Use the draftId in the link
       toast.success('Link generated successfully! 🎉')
       showModal.value = true
     } else {
@@ -361,6 +372,17 @@ const clearEditorBlocks = async () => {
 @media only screen and (max-width: 992px) {
   .composer-container {
     padding: var(--m-spacing) var(--m-spacing) var(--l-spacing) var(--m-spacing);
+  }
+}
+@media only screen and (max-width: 660px) {
+  .composer-container {
+    padding: var(--m-spacing) var(--m-spacing) var(--l-spacing) var(--m-spacing);
+    border: none;
+    border-radius: 0;
+    margin-left: 0;
+    margin-right: 0;
+    margin-bottom: 0;
+    margin-top: 47px;
   }
 }
 

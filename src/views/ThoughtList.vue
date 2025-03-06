@@ -1,6 +1,5 @@
 <template>
   <div class="drafts">
-    <PageHeader></PageHeader>
     <main>
       <div class="drafts-container">
         <!-- Loader -->
@@ -9,7 +8,6 @@
         </div>
         <!-- Drafts Section -->
         <template v-else>
-          <p class="section-title">Drafts</p>
           <section v-if="letters.drafts.length > 0">
             <div class="drafts-grid">
               <div v-for="letter in letters.drafts" :key="letter.id" class="draft" @click="openDraft(letter.id)">
@@ -51,21 +49,22 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { supabase } from '@/lib/supabaseClient'
 import PageHeader from '@/components/organisms/PageHeader.vue'
 import { formatDistanceToNow, parseISO } from 'date-fns'
-import { useRouter } from 'vue-router'
 import { toast } from 'toaster-ts'
 import { useClipboard } from '@vueuse/core'
 const { copy } = useClipboard()
+
+const emit = defineEmits(['openDraft'])
+const props = defineProps({ refreshTrigger: Number })
 
 const userStore = useUserStore()
 const letters = ref({ drafts: [], shared: [] }) // To hold the fetched drafts and shared letters
 const loading = ref(false)
 const error = ref(null)
-const router = useRouter()
 
 function formatDate(dateString) {
   const date = parseISO(dateString) // Parse the ISO string into a Date object
@@ -123,18 +122,27 @@ const fetchLetters = async () => {
 }
 
 const openDraft = (id) => {
-  router.push({ name: 'LetterComposer', query: { draftId: id } })
+  console.log('open draft from thougtlist thrown')
+  // router.push({ name: 'LetterComposer', query: { draftId: id } })
+  emit('openDraft', id)
 }
 
 // Call the fetchLetters method when the component is mounted
 onMounted(() => {
   fetchLetters()
 })
+
+watch(
+  () => props.refreshTrigger,
+  () => {
+    fetchLetters()
+  }
+)
 </script>
 
 <style scoped>
 .drafts-container {
-  padding: var(--l-spacing) var(--xs-spacing);
+  padding: var(--s-spacing) var(--xs-spacing);
   max-width: 55em;
   margin: 0 auto;
   width: 100%;
@@ -142,7 +150,7 @@ onMounted(() => {
 
 .drafts-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  grid-template-columns: 1fr;
   gap: var(--sm-spacing);
 }
 
@@ -167,12 +175,12 @@ onMounted(() => {
 }
 
 .draft-content {
-  height: 10em;
   overflow: hidden;
 }
 
 .draft-footer {
   position: relative;
+  margin-top: 1em;
 }
 
 .draft-footer::before {

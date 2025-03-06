@@ -1,8 +1,13 @@
 <template>
   <div class="header-wrapper">
     <header class="page-header">
-      <User class="header-user" />
-      <NavigationDock class="header-nav" />
+      <div class="left-actions">
+        <div class="actionlist-toggle sidebar-button" ref="toggleSidebarButton" @click="toggleSidebar">
+          <LucideSidebar class="icon ellipsis-icon" />
+        </div>
+        <User class="header-user" />
+      </div>
+      <!-- <NavigationDock class="header-nav" /> -->
       <div class="header-actions">
         <slot name="actions"></slot>
         <div class="actionlist-toggle" :class="{ active: isDropdownOpen }" @click="toggleDropdown" ref="toggleButton">
@@ -21,16 +26,21 @@
 import { ref, defineEmits } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import User from '@/components/molecules/UserProfile.vue'
-import NavigationDock from '@/components/molecules/NavigationDock.vue'
+// import NavigationDock from '@/components/molecules/NavigationDock.vue'
 
 const isDropdownOpen = ref(false)
 const dropdownMenu = ref(null)
 const toggleButton = ref(null)
 
-const emit = defineEmits(['clear'])
+const emit = defineEmits(['clear', 'toggleSidebar'])
 
 const toggleDropdown = () => {
   isDropdownOpen.value = !isDropdownOpen.value
+}
+
+const toggleSidebar = () => {
+  emit('toggleSidebar')
+  console.log('togglesidebar emnitted from pageheader')
 }
 
 // Use VueUse's onClickOutside to close dropdown when clicking outside
@@ -136,5 +146,19 @@ ul#actionlist {
 
 #actionlist .action:hover {
   background: var(--stroke);
+}
+
+/* todo: clean this left actions thing up! */
+.left-actions {
+  display: flex;
+  gap: var(--xs-spacing);
+  align-items: center;
+}
+
+/* todo: uglyness. should be done trough v-if? */
+@media only screen and (min-width: 992px) {
+  .sidebar-button {
+    display: none;
+  }
 }
 </style>
