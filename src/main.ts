@@ -26,7 +26,8 @@ import {
   Feather,
   Ellipsis,
   Wind,
-  PanelLeft
+  PanelLeft,
+  SquarePen
 } from 'lucide-vue-next'
 
 // icons to use in the app...
@@ -46,6 +47,7 @@ app.component('LucideFeather', Feather)
 app.component('LucideEllipsis', Ellipsis)
 app.component('LucideWind', Wind)
 app.component('LucideSidebar', PanelLeft)
+app.component('LucideSquarePen', SquarePen)
 
 app.use(createPinia())
 app.use(router)

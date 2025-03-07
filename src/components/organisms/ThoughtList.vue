@@ -119,7 +119,6 @@ const fetchLetters = async () => {
 }
 
 const openDraft = (id) => {
-  console.log('open draft from thougtlist thrown')
   emit('openDraft', id)
 }
 
@@ -138,7 +137,7 @@ watch(
 
 <style scoped>
 .drafts-container {
-  padding: var(--xs-spacing);
+  padding: 0 var(--xs-spacing) var(--xs-spacing) var(--xs-spacing);
   max-width: 55em;
   margin: 0 auto;
   width: 100%;
@@ -170,6 +169,7 @@ watch(
 
 .draft-content {
   overflow: hidden;
+  max-height: 10em;
 }
 
 .draft-footer {
@@ -192,7 +192,7 @@ watch(
 .drafts {
   display: flex;
   flex-direction: column;
-  height: calc(100dvh - 38px);
+  height: calc(100dvh - 46px);
   padding-bottom: env(safe-area-inset-bottom);
   overflow: auto;
 }

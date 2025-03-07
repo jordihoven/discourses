@@ -16,7 +16,8 @@
     </header>
     <ul v-if="isDropdownOpen" id="actionlist" ref="dropdownMenu">
       <!-- <li class="action" @click="handleAction('clear')"><LucideSearch class="icon" />Search</li> -->
-      <li class="action" @click="handleAction('clear')"><LucideWind class="icon" />Clear thought</li>
+      <li class="action" @click="handleAction('new')"><LucideSquarePen class="icon" />New</li>
+      <li class="action" @click="handleAction('clear')"><LucideWind class="icon" />Clear</li>
     </ul>
   </div>
 </template>
@@ -30,7 +31,7 @@ const isDropdownOpen = ref(false)
 const dropdownMenu = ref(null)
 const toggleButton = ref(null)
 
-const emit = defineEmits(['clear', 'toggleSidebar'])
+const emit = defineEmits(['clear', 'new', 'share', 'toggleSidebar'])
 
 const toggleDropdown = () => {
   isDropdownOpen.value = !isDropdownOpen.value
@@ -38,7 +39,6 @@ const toggleDropdown = () => {
 
 const toggleSidebar = () => {
   emit('toggleSidebar')
-  console.log('togglesidebar emnitted from pageheader')
 }
 
 // Use VueUse's onClickOutside to close dropdown when clicking outside
@@ -51,9 +51,11 @@ onClickOutside(
 ) // Ignore clicks on the toggle button
 
 const handleAction = (action) => {
-  console.log(`Action triggered: ${action}`)
   if (action === 'clear') {
     emit('clear')
+  }
+  if (action === 'new') {
+    emit('new')
   }
   isDropdownOpen.value = false
 }
@@ -65,7 +67,7 @@ const handleAction = (action) => {
   justify-content: space-between;
   align-items: center;
   gap: var(--xs-spacing);
-  padding: var(--xs-spacing) var(--xs-spacing) 0 var(--xs-spacing);
+  padding: var(--xs-spacing);
   background-color: var(--background1);
 }
 
@@ -120,6 +122,7 @@ ul#actionlist {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  z-index: 420;
 }
 
 #actionlist .action {

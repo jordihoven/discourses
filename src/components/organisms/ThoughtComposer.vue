@@ -1,10 +1,5 @@
 <template>
   <div :class="{ 'modal-active': showModal }" class="lettercomposer">
-    <!-- <PageHeader @clear="clearEditorBlocks">
-      <template #actions>
-        <button @click="openModal" ref="shareButton" :disabled="!editorContent">Share</button>
-      </template>
-    </PageHeader> -->
     <main class="composer-container">
       <div ref="editor" class="editorjs" :class="{ disabled: generatedLink }"></div>
     </main>
@@ -12,7 +7,7 @@
     <transition name="fade">
       <div v-if="showModal" ref="modal" class="modal">
         <div class="modal-content">
-          <span>Share your letter to anyone, anywhere.</span>
+          <span>Share thought to anyone by link.</span>
           <div v-if="!generatedLink" class="copy-letter">
             <a class="letter-link disabled" href="#">discourses.app/letter/...</a>
             <button @click="generateLetterLink" :disabled="isGenerating">
@@ -40,7 +35,6 @@ import Header from '@editorjs/header'
 import { supabase } from '@/lib/supabaseClient'
 import { toast } from 'toaster-ts'
 import { useClipboard, onClickOutside } from '@vueuse/core'
-import PageHeader from '@/components/organisms/PageHeader.vue'
 import { useUserStore } from '@/stores/user'
 
 const props = defineProps({
@@ -48,7 +42,8 @@ const props = defineProps({
     type: String,
     required: false,
     default: null
-  }
+  },
+  shareButtonRef: { type: Object, required: false }
 })
 
 const emit = defineEmits(['update:draftId', 'thoughtChanged'])
@@ -207,7 +202,7 @@ async function saveDraft(content) {
       const { error } = await supabase.from('letters').update({ content_json: content, status: 'draft' }).eq('id', props.draftId)
       if (error) throw error
     }
-    toast.success('Draft saved')
+    toast.success('Note saved 💾')
     emit('thoughtChanged') // emit event to update thoughtlist...
   } catch (err) {
     console.error('Error saving draft:', err.message)
@@ -223,7 +218,7 @@ async function deleteDraft(id) {
   try {
     const { error } = await supabase.from('letters').delete().eq('id', id)
     if (error) throw error
-    toast.success('Draft deleted')
+    toast.success('Note deleted 🗑️')
     emit('thoughtChanged') // emit event to update thoughtlist...
   } catch (err) {
     console.error('Error deleting draft:', err.message)
@@ -251,7 +246,7 @@ async function generateLetterLink() {
       if (error) throw error
 
       generatedLink.value = `${window.location.origin}/letter/${props.draftId}` // Use the draftId in the link
-      toast.success('Link generated successfully! 🎉')
+      toast.success('Link generated! 🎉')
       showModal.value = true
     } else {
       // Create a new row if no draft exists
@@ -264,7 +259,7 @@ async function generateLetterLink() {
 
       const letterId = data[0].id
       generatedLink.value = `${window.location.origin}/letter/${letterId}`
-      toast.success('Link generated successfully! 🎉')
+      toast.success('Link generated! 🎉')
       showModal.value = true
     }
   } catch (err) {
@@ -282,39 +277,53 @@ function copyLink() {
   }
 }
 
-const shareButton = ref(null)
+// const shareButton = ref(null)
 const showModal = ref(false)
 
-const openModal = () => {
+const showShareModal = () => {
   showModal.value = true
 }
+
 const closeModal = () => {
   showModal.value = false
+  console.log('Modal closed via click outside')
 }
 
-onClickOutside(
-  modal,
-  closeModal,
-  { ignore: [shareButton] } // Ignore clicks on the share button
-)
+if (props.shareButtonRef) {
+  onClickOutside(modal, closeModal, { ignore: [props.shareButtonRef] })
+} else {
+  onClickOutside(modal, closeModal)
+}
 
 // handling the emitted action event from the pageheader...
 const clearEditorBlocks = async () => {
-  console.log('ran clear blocks')
   if (editorInstance) {
     // Call Editor.js's clear method.
     // Depending on your version, it might be editor.clear() or editor.blocks.clear().
     await editorInstance.clear()
-    console.log('Editor cleared')
   }
 }
+
+// In ThoughtComposer.vue
+const newNote = async () => {
+  if (editorInstance) {
+    // Clear the editor content
+    await editorInstance.clear()
+  }
+  // Set the draftId to null so that the empty state is not saved as a deletion
+  // and a new draft will be created on subsequent edits.
+  emit('update:draftId', null)
+}
+
+// expose the clear editor blocks method to the parent (homeview)
+defineExpose({ clearEditorBlocks, newNote, showShareModal })
 </script>
 
 <style scoped>
 .lettercomposer {
   display: flex;
   flex-direction: column;
-  height: calc(100dvh - 38px);
+  height: calc(100dvh - 46px);
   padding-bottom: env(safe-area-inset-bottom);
 }
 
@@ -366,7 +375,7 @@ const clearEditorBlocks = async () => {
   margin-left: var(--xs-spacing);
   margin-right: var(--xs-spacing);
   margin-bottom: var(--xs-spacing);
-  margin-top: var(--xs-spacing);
+  margin-top: 0;
 }
 
 @media only screen and (max-width: 992px) {

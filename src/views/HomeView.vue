@@ -1,6 +1,10 @@
 <template>
   <div class="home-page">
-    <AppHeader @toggleSidebar="isVisible = !isVisible" @clear="clearEditorBlocks" />
+    <AppHeader @toggleSidebar="isVisible = !isVisible" @clear="handleClear" @new="handleNew">
+      <template #actions>
+        <button @click="handleShare" ref="shareButtonRef">Share</button>
+      </template>
+    </AppHeader>
     <div class="home-content">
       <ThoughtList
         :class="{ visible: isVisible }"
@@ -9,7 +13,13 @@
         :refreshTrigger="refreshTrigger"
         @openDraft="handleOpenDraft"
       />
-      <LetterComposer id="composer" v-model:draftId="draftId" @thoughtChanged="handleThoughtChanged" />
+      <ThoughtComposer
+        v-model:draftId="draftId"
+        ref="composerRef"
+        @thoughtChanged="handleThoughtChanged"
+        :shareButtonRef="shareButtonRef"
+        id="composer"
+      />
     </div>
   </div>
 </template>
@@ -17,7 +27,7 @@
 <script setup>
 import { ref } from 'vue'
 import AppHeader from '@/components/organisms/PageHeader.vue'
-import LetterComposer from '@/components/organisms/ThoughtComposer.vue'
+import ThoughtComposer from '@/components/organisms/ThoughtComposer.vue'
 import ThoughtList from '@/components/organisms/ThoughtList.vue'
 
 // You might manage a draftId from query params or state here, if needed
@@ -26,7 +36,6 @@ const draftId = ref(null)
 const isVisible = ref(false)
 
 function handleOpenDraft(id) {
-  console.log('open draft received', id)
   if (window.innerWidth < 992) isVisible.value = false
   draftId.value = id
 }
@@ -34,9 +43,36 @@ function handleOpenDraft(id) {
 const refreshTrigger = ref(0)
 function handleThoughtChanged() {
   // Update the refreshTrigger, which ThoughtList can watch.
-  console.log('thought changed event triggered in home!')
   refreshTrigger.value++
 }
+
+const composerRef = ref(null)
+
+function handleClear() {
+  if (composerRef.value && composerRef.value.clearEditorBlocks) {
+    composerRef.value.clearEditorBlocks()
+  } else {
+    console.warn('LetterComposer is not available.')
+  }
+}
+
+function handleNew() {
+  if (composerRef.value && composerRef.value.newNote) {
+    composerRef.value.newNote()
+  } else {
+    console.warn('LetterComposer is not available.')
+  }
+}
+
+function handleShare() {
+  if (composerRef.value && composerRef.value.showShareModal) {
+    composerRef.value.showShareModal()
+  } else {
+    console.warn('LetterComposer is not available.')
+  }
+}
+
+const shareButtonRef = ref(null)
 </script>
 
 <style scoped>
