@@ -1,58 +1,55 @@
 <template>
-  <div class="drafts">
-    <main>
-      <div class="drafts-container">
-        <!-- Loader -->
-        <div v-if="loading" class="loading">
-          <LucideLoader class="loader icon" />
-        </div>
-        <!-- Drafts Section -->
-        <template v-else>
-          <section v-if="letters.drafts.length > 0">
-            <div class="drafts-grid">
-              <div v-for="letter in letters.drafts" :key="letter.id" class="draft" @click="openDraft(letter.id)">
-                <div class="draft-content">
-                  <div v-for="(block, index) in letter.content_json.blocks.slice(0, 3)" :key="index">
-                    <p v-html="block.data?.text || 'No content'"></p>
-                  </div>
-                </div>
-                <div class="draft-footer">
-                  <span>{{ formatDate(letter.updated_at) }}</span>
-                </div>
-              </div>
-            </div>
-          </section>
-          <div v-else class="no-drafts">
-            <span>You don't have any drafts yet... 👀</span>
-          </div>
-          <!-- Shared Section -->
-          <p class="section-title">Shared</p>
-          <section v-if="letters.shared.length > 0">
-            <div class="drafts-grid">
-              <div v-for="letter in letters.shared" :key="letter.id" class="draft">
-                <div class="draft-content">
-                  <div v-for="(block, index) in letter.content_json.blocks.slice(0, 3)" :key="index">
-                    <p v-html="block.data?.text || 'No content'"></p>
-                  </div>
-                </div>
-                <button class="copy-button" @click="copySharedLink(letter.id)"><LucideLink class="icon" />Copy link</button>
-              </div>
-            </div>
-          </section>
-          <div v-else class="no-drafts">
-            <span>Shared letters will show up here.. ✨</span>
-          </div>
-        </template>
+  <main class="drafts">
+    <div class="drafts-container">
+      <!-- Loader -->
+      <div v-if="loading" class="loading">
+        <LucideLoader class="loader icon" />
       </div>
-    </main>
-  </div>
+      <!-- Drafts Section -->
+      <template v-else>
+        <section v-if="letters.drafts.length > 0">
+          <div class="drafts-grid">
+            <div v-for="letter in letters.drafts" :key="letter.id" class="draft" @click="openDraft(letter.id)">
+              <div class="draft-content">
+                <div v-for="(block, index) in letter.content_json.blocks.slice(0, 3)" :key="index">
+                  <p v-html="block.data?.text || 'No content'"></p>
+                </div>
+              </div>
+              <div class="draft-footer">
+                <span>{{ formatDate(letter.updated_at) }}</span>
+              </div>
+            </div>
+          </div>
+        </section>
+        <div v-else class="no-drafts">
+          <span>You don't have any drafts yet... 👀</span>
+        </div>
+        <!-- Shared Section -->
+        <p class="section-title">Shared</p>
+        <section v-if="letters.shared.length > 0">
+          <div class="drafts-grid">
+            <div v-for="letter in letters.shared" :key="letter.id" class="draft">
+              <div class="draft-content">
+                <div v-for="(block, index) in letter.content_json.blocks.slice(0, 3)" :key="index">
+                  <p v-html="block.data?.text || 'No content'"></p>
+                </div>
+              </div>
+              <button class="copy-button" @click="copySharedLink(letter.id)"><LucideLink class="icon" />Copy link</button>
+            </div>
+          </div>
+        </section>
+        <div v-else class="no-drafts">
+          <span>Shared letters will show up here.. ✨</span>
+        </div>
+      </template>
+    </div>
+  </main>
 </template>
 
 <script setup>
 import { ref, onMounted, watch } from 'vue'
 import { useUserStore } from '@/stores/user'
 import { supabase } from '@/lib/supabaseClient'
-import PageHeader from '@/components/organisms/PageHeader.vue'
 import { formatDistanceToNow, parseISO } from 'date-fns'
 import { toast } from 'toaster-ts'
 import { useClipboard } from '@vueuse/core'
@@ -123,7 +120,6 @@ const fetchLetters = async () => {
 
 const openDraft = (id) => {
   console.log('open draft from thougtlist thrown')
-  // router.push({ name: 'LetterComposer', query: { draftId: id } })
   emit('openDraft', id)
 }
 
@@ -142,7 +138,7 @@ watch(
 
 <style scoped>
 .drafts-container {
-  padding: var(--s-spacing) var(--xs-spacing);
+  padding: var(--xs-spacing);
   max-width: 55em;
   margin: 0 auto;
   width: 100%;
@@ -155,16 +151,14 @@ watch(
 }
 
 .draft {
-  background-color: var(--background2);
+  background-color: var(--background);
   padding: var(--xs-spacing);
   border-radius: var(--radius);
-  border: var(--border);
   justify-content: space-between;
   display: flex;
   flex-direction: column;
   gap: var(--xs-spacing);
   transition: var(--transition);
-  box-shadow: 0 2px 6px var(--background2);
   overflow: hidden;
 }
 .draft:hover,
@@ -192,13 +186,15 @@ watch(
   width: 100%;
   height: 5em;
   pointer-events: none;
-  background: linear-gradient(transparent, var(--background2));
+  background: linear-gradient(transparent, var(--background));
 }
 
 .drafts {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: calc(100dvh - 47px);
+  padding-bottom: env(safe-area-inset-bottom);
+  overflow: auto;
 }
 
 .loading {
@@ -231,10 +227,6 @@ watch(
 
 p.section-title {
   color: var(--text2);
-}
-
-section {
-  margin-bottom: var(--l-spacing);
 }
 
 .copy-button {

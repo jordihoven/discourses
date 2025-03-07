@@ -37,7 +37,8 @@
   /* others */
   --radius: 12px;
   --radius-sm: 8px;
-  --transition: all 0.3s ease-in-out;
+  --transition: all 0.3s ease;
+  --fast-transition: all 0.2s ease-in-out;
   --border: 1px solid var(--stroke);
   --box-shadow: 0 0 0 2px rgba(0, 112, 243, 0.5);
   /* media queries */
@@ -65,8 +66,8 @@
 @media (prefers-color-scheme: light) {
   :root {
     --background: #f2f2f2;
-    --background1: #f2f2f2;
-    --background2: #fafafa;
+    --background1: #fafafa;
+    --background2: #fff;
     --text1: #171717;
     --text2: #525252;
     --surface: #f2f2f2;

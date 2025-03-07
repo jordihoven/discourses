@@ -7,7 +7,6 @@
         </div>
         <User class="header-user" />
       </div>
-      <!-- <NavigationDock class="header-nav" /> -->
       <div class="header-actions">
         <slot name="actions"></slot>
         <div class="actionlist-toggle" :class="{ active: isDropdownOpen }" @click="toggleDropdown" ref="toggleButton">
@@ -26,7 +25,6 @@
 import { ref, defineEmits } from 'vue'
 import { onClickOutside } from '@vueuse/core'
 import User from '@/components/molecules/UserProfile.vue'
-// import NavigationDock from '@/components/molecules/NavigationDock.vue'
 
 const isDropdownOpen = ref(false)
 const dropdownMenu = ref(null)
@@ -62,14 +60,6 @@ const handleAction = (action) => {
 </script>
 
 <style scoped>
-.header-wrapper {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 1000;
-}
-
 .page-header {
   display: flex;
   justify-content: space-between;
@@ -156,9 +146,4 @@ ul#actionlist {
 }
 
 /* todo: uglyness. should be done trough v-if? */
-@media only screen and (min-width: 992px) {
-  .sidebar-button {
-    display: none;
-  }
-}
 </style>

@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 // import Composer from '@/views/ThoughtComposer.vue'
 import Reader from '@/views/ThoughtReader.vue'
-import Thoughts from '@/views/ThoughtList.vue'
+import Thoughts from '@/components/organisms/ThoughtList.vue'
 import Login from '@/views/UserLogin.vue'
 import { supabase } from '@/lib/supabaseClient'
 

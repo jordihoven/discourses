@@ -314,7 +314,7 @@ const clearEditorBlocks = async () => {
 .lettercomposer {
   display: flex;
   flex-direction: column;
-  height: 100dvh;
+  height: calc(100dvh - 47px);
   padding-bottom: env(safe-area-inset-bottom);
 }
 
@@ -366,7 +366,7 @@ const clearEditorBlocks = async () => {
   margin-left: var(--xs-spacing);
   margin-right: var(--xs-spacing);
   margin-bottom: var(--xs-spacing);
-  margin-top: calc(var(--xs-spacing) + 48px);
+  margin-top: var(--xs-spacing);
 }
 
 @media only screen and (max-width: 992px) {
@@ -379,10 +379,7 @@ const clearEditorBlocks = async () => {
     padding: var(--m-spacing) var(--m-spacing) var(--l-spacing) var(--m-spacing);
     border: none;
     border-radius: 0;
-    margin-left: 0;
-    margin-right: 0;
-    margin-bottom: 0;
-    margin-top: 47px;
+    margin: 0;
   }
 }
 
