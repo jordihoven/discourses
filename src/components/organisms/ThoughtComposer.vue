@@ -314,7 +314,7 @@ const clearEditorBlocks = async () => {
 .lettercomposer {
   display: flex;
   flex-direction: column;
-  height: calc(100dvh - 47px);
+  height: calc(100dvh - 38px);
   padding-bottom: env(safe-area-inset-bottom);
 }
 

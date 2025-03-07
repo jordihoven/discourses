@@ -65,8 +65,7 @@ const handleAction = (action) => {
   justify-content: space-between;
   align-items: center;
   gap: var(--xs-spacing);
-  padding: var(--xs-spacing);
-  border-bottom: var(--border);
+  padding: var(--xs-spacing) var(--xs-spacing) 0 var(--xs-spacing);
   background-color: var(--background1);
 }
 
