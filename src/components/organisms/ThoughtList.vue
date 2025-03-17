@@ -5,41 +5,46 @@
       <div v-if="loading" class="loading">
         <LucideLoader class="loader icon" />
       </div>
-      <!-- Drafts Section -->
       <template v-else>
-        <section v-if="letters.drafts.length > 0">
+        <section v-if="notes.drafts.length > 0">
           <div class="drafts-grid">
-            <div v-for="letter in letters.drafts" :key="letter.id" class="draft" @click="openDraft(letter.id)">
+            <div
+              v-for="note in notes.drafts"
+              :key="note.id"
+              class="draft"
+              :class="{ 'active-note': activeNoteId === note.id }"
+              @click="openDraft(note.id)"
+            >
               <div class="draft-content">
-                <div v-for="(block, index) in letter.content_json.blocks.slice(0, 3)" :key="index">
+                <div v-for="(block, index) in note.content_json.blocks.slice(0, 3)" :key="index">
                   <p v-html="block.data?.text || 'No content'"></p>
                 </div>
               </div>
               <div class="draft-footer">
-                <span>{{ formatDate(letter.updated_at) }}</span>
+                <span>{{ formatDate(note.updated_at) }}</span>
               </div>
             </div>
           </div>
         </section>
         <div v-else class="no-drafts">
-          <span>You don't have any drafts yet... 👀</span>
+          <span class="empty-state">You don't have any notes yet... 👀</span>
         </div>
         <!-- Shared Section -->
-        <p class="section-title">Shared</p>
-        <section v-if="letters.shared.length > 0">
+        <p v-if="notes.shared.length > 0" class="section-title">Shared</p>
+        <section v-if="notes.shared.length > 0">
           <div class="drafts-grid">
-            <div v-for="letter in letters.shared" :key="letter.id" class="draft">
+            <div v-for="note in notes.shared" :key="note.id" class="draft">
               <div class="draft-content">
-                <div v-for="(block, index) in letter.content_json.blocks.slice(0, 3)" :key="index">
+                <div v-for="(block, index) in note.content_json.blocks.slice(0, 3)" :key="index">
                   <p v-html="block.data?.text || 'No content'"></p>
                 </div>
               </div>
-              <button class="copy-button" @click="copySharedLink(letter.id)"><LucideLink class="icon" />Copy link</button>
+              <button class="copy-button" @click="copySharedLink(note.id)"><LucideLink class="icon" />Copy link</button>
             </div>
           </div>
         </section>
         <div v-else class="no-drafts">
-          <span>Shared letters will show up here.. ✨</span>
+          <span v-if="notes.drafts.lenght > 0" class="empty-state">Shared notes will show here.. ✨</span>
         </div>
       </template>
     </div>
@@ -55,11 +60,13 @@ import { toast } from 'toaster-ts'
 import { useClipboard } from '@vueuse/core'
 const { copy } = useClipboard()
 
+const activeNoteId = ref(null)
+
 const emit = defineEmits(['openDraft'])
 const props = defineProps({ refreshTrigger: Number })
 
 const userStore = useUserStore()
-const letters = ref({ drafts: [], shared: [] }) // To hold the fetched drafts and shared letters
+const notes = ref({ drafts: [], shared: [] }) // To hold the fetched drafts and shared notes
 const loading = ref(false)
 const error = ref(null)
 
@@ -70,7 +77,7 @@ function formatDate(dateString) {
 
 // Generate shareable link and copy it
 const copySharedLink = (id) => {
-  const link = `${window.location.origin}/letter/${id}`
+  const link = `${window.location.origin}/note/${id}`
   copy(link)
     .then(() => {
       toast('Link copied to clipboard')
@@ -80,8 +87,8 @@ const copySharedLink = (id) => {
     })
 }
 
-// Fetch drafts and shared letters from the database
-const fetchLetters = async () => {
+// Fetch drafts and shared notes from the database
+const fetchNotes = async () => {
   if (!userStore.user?.id) {
     error.value = 'User not authenticated'
     return
@@ -92,14 +99,14 @@ const fetchLetters = async () => {
 
   try {
     const { data: draftsData, error: fetchDraftsError } = await supabase
-      .from('letters')
+      .from('notes')
       .select('*')
       .eq('user_id', userStore.user.id)
       .eq('status', 'draft')
       .order('updated_at', { ascending: false })
 
     const { data: sharedData, error: fetchSharedError } = await supabase
-      .from('letters')
+      .from('notes')
       .select('*')
       .eq('user_id', userStore.user.id)
       .eq('status', 'sent')
@@ -109,7 +116,7 @@ const fetchLetters = async () => {
       throw new Error(fetchDraftsError?.message || fetchSharedError?.message)
     }
 
-    letters.value = { drafts: draftsData, shared: sharedData }
+    notes.value = { drafts: draftsData, shared: sharedData }
   } catch (err) {
     error.value = err.message
     toast.error(err.message)
@@ -119,18 +126,19 @@ const fetchLetters = async () => {
 }
 
 const openDraft = (id) => {
+  activeNoteId.value = id
   emit('openDraft', id)
 }
 
-// Call the fetchLetters method when the component is mounted
+// Call the fetchnotes method when the component is mounted
 onMounted(() => {
-  fetchLetters()
+  fetchNotes()
 })
 
 watch(
   () => props.refreshTrigger,
   () => {
-    fetchLetters()
+    fetchNotes()
   }
 )
 </script>
@@ -165,6 +173,13 @@ watch(
   cursor: pointer;
   filter: brightness(92%);
   transform: translateY(1px);
+}
+
+.draft.active-note {
+  background-color: var(--stroke);
+}
+.draft.active-note .draft-footer::before {
+  background: linear-gradient(transparent, var(--stroke));
 }
 
 .draft-content {
@@ -232,5 +247,10 @@ p.section-title {
 .copy-button {
   background-color: var(--stroke);
   justify-content: center;
+}
+
+.empty-state {
+  text-align: center;
+  margin-bottom: var(--xs-spacing);
 }
 </style>

@@ -10,15 +10,8 @@ import Home from '@/views/HomeView.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
-    // {
-    //   path: '/',
-    //   name: 'LetterComposer',
-    //   component: Composer,
-    //   meta: { requiresAuth: true },
-    //   props: (route) => ({ draftId: route.query.draftId })
-    // },
     {
-      path: '/letter/:id',
+      path: '/note/:id',
       name: 'LetterViewer',
       component: Reader,
       props: true

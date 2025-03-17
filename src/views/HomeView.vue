@@ -95,10 +95,13 @@ const shareButtonRef = ref(null)
   /* Sidebar hidden state */
   #thoughtsList {
     width: 0;
+    transform: scaleX(0);
+    transform-origin: left;
   }
   /* Sidebar visible state */
   #thoughtsList.visible {
     width: 240px;
+    transform: scaleX(1);
   }
 }
 

@@ -72,7 +72,7 @@ const userStore = useUserStore() // Access the Pinia user store
 // Fetch the draft content when the component is mounted
 const fetchDraft = async (draftId) => {
   try {
-    const { data, error } = await supabase.from('letters').select('content_json').eq('id', draftId).single()
+    const { data, error } = await supabase.from('notes').select('content_json').eq('id', draftId).single()
     if (error) throw error
     // Initialize the editor with the fetched draft content
     if (data) {
@@ -191,7 +191,7 @@ async function saveDraft(content) {
     if (!props.draftId) {
       // Insert a new draft
       const { data, error } = await supabase
-        .from('letters')
+        .from('notes')
         .insert([{ content_json: content, user_id: userId, status: 'draft' }])
         .select()
 
@@ -199,7 +199,7 @@ async function saveDraft(content) {
       emit('update:draftId', data[0]?.id)
     } else {
       // Update existing draft
-      const { error } = await supabase.from('letters').update({ content_json: content, status: 'draft' }).eq('id', props.draftId)
+      const { error } = await supabase.from('notes').update({ content_json: content, status: 'draft' }).eq('id', props.draftId)
       if (error) throw error
     }
     toast.success('Note saved 💾')
@@ -216,7 +216,7 @@ const debouncedSaveDraft = debounce(saveDraft, 1200)
 
 async function deleteDraft(id) {
   try {
-    const { error } = await supabase.from('letters').delete().eq('id', id)
+    const { error } = await supabase.from('notes').delete().eq('id', id)
     if (error) throw error
     toast.success('Note deleted 🗑️')
     emit('thoughtChanged') // emit event to update thoughtlist...
@@ -241,17 +241,17 @@ async function generateLetterLink() {
 
     if (props.draftId) {
       // Update the existing draft with new content and status "sent"
-      const { error } = await supabase.from('letters').update({ content_json: content, status: 'sent' }).eq('id', props.draftId)
+      const { error } = await supabase.from('notes').update({ content_json: content, status: 'sent' }).eq('id', props.draftId)
 
       if (error) throw error
 
-      generatedLink.value = `${window.location.origin}/letter/${props.draftId}` // Use the draftId in the link
+      generatedLink.value = `${window.location.origin}/note/${props.draftId}` // Use the draftId in the link
       toast.success('Link generated! 🎉')
       showModal.value = true
     } else {
       // Create a new row if no draft exists
       const { data, error } = await supabase
-        .from('letters')
+        .from('notes')
         .insert([{ content_json: content, status: 'sent' }])
         .select()
 
